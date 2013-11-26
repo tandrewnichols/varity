@@ -1,0 +1,22 @@
+{
+  "name": "varity",
+  "description": "A simple wrapper to make variable length arities easier to manage",
+  "version": "0.0.1",
+  "author": "Andrew Nichols <anichols@manta.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tandrewnichols/varity.git"
+  },
+  "homepage": "https://github.com/tandrewnichols/varity",
+  "scripts": {
+    "test": "mocha test --compilers coffee:coffee-script"
+  },
+  "devDependencies": {
+    "coffee-script": "*",
+    "mocha": "*",
+    "should": "*",
+    "sinon": "*"
+  },
+  "keywords": ["arity", "arguments", "parameters"],
+  "main": "./lib/varity"
+}
