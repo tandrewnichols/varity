@@ -11,6 +11,9 @@
   "scripts": {
     "test": "mocha test --compilers coffee:coffee-script"
   },
+  "dependencies": {
+    "underscore": "*"
+  },
   "devDependencies": {
     "coffee-script": "*",
     "mocha": "*",
