@@ -588,6 +588,152 @@ describe 'varity', ->
         wrapped obj, arr, 'string', f
         callback.calledWith(obj, arr, 'string', f).should.be.true
 
+    context 'called with an object', ->
+      it 'should accept a string type', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Array'
+        , callback
+        arr = []
+        wrapped arr
+        callback.calledWith(arr).should.be.true
+
+      it 'should convert Object to AnonObject', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Object'
+        , callback
+        obj = {}
+        wrapped obj
+        callback.calledWith(obj).should.be.true
+
+      it 'should convert Regexp to RegExp', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Regexp'
+        , callback
+        reg = /.*/
+        wrapped reg
+        callback.calledWith(reg).should.be.true
+
+      it 'should convert Nan to NaN', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'NaN'
+        , callback
+        wrapped NaN
+        callback.args[0][0].should.be.NaN
+
+      it 'should accept a real type', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: Function
+        , callback
+        fn = ->
+        wrapped fn
+        callback.calledWith(fn).should.be.true
+
+      it 'should accept optional', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Object'
+          optional: true
+        ,
+          type: 'Object'
+        , callback
+        obj = {}
+        wrapped obj
+        callback.calledWith(undefined, {}).should.be.true
+
+      it 'should accept expand', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Object',
+          expand: true
+        , callback
+        wrapped()
+        callback.calledWith({}).should.be.true
+
+      it 'should accept expand and optional', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Object'
+          optional: 'true',
+          expand: 'true'
+        ,
+          type: 'Object'
+        , callback
+        obj =
+          one: 1
+          two: 2
+        wrapped obj
+        callback.calledWith({}, obj).should.be.true
+
+      it 'should accept default on custom string types', ->
+        callback = sinon.spy()
+        class Foo
+        wrapped = varity.wrap
+          type: 'Foo'
+          expand: true
+          default: ->
+            return new Foo()
+        , callback
+        wrapped()
+        callback.args[0][0].should.be.an.instanceOf(Foo)
+
+      it 'should accept default on custom real types', ->
+        callback = sinon.spy()
+        class Foo
+        wrapped = varity.wrap
+          type: Foo
+          expand: true
+          default: ->
+            return new Foo()
+        , callback
+        wrapped()
+        callback.args[0][0].should.be.an.instanceOf(Foo)
+
+      it 'should accept default on built in types', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Object'
+          expand: true
+          default: ->
+            return one: 1
+        , callback
+        wrapped()
+        callback.calledWith(one: 1).should.be.true
+
+      it 'should accept a mix of objects', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap
+          type: 'Array'
+        ,
+          type: 'Object'
+          optional: 'true'
+        ,
+          type: 'Object'
+        ,
+          type: 'String'
+          expand: 'true'
+        , callback
+        arr = []
+        obj = one: 1
+        wrapped arr, obj
+        callback.calledWith(arr, undefined, obj, '').should.be.true
+
+      it 'should accept objects with other parameters', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 's-o', Object,
+          type: 'Array',
+          expand: true
+          default: -> ['one', 'two']
+        , [ '-+String', 'String']
+        , callback
+        obj = one: 1
+        wrapped 'string1', obj, 'string2'
+        callback.calledWith('string1', undefined, obj, ['one', 'two'], '', 'string2').should.be.true
+
   describe '~wrapper', ->
     context 'called with a missing param', ->
       it 'should pass undefined as the first param', ->
@@ -884,9 +1030,43 @@ describe 'varity', ->
         callback.args[0][1].constructor.name.should.equal('Error')
         callback.args[0][1].message.should.equal('')
 
-      #it 'should work with - on different arguments', ->
-        #callback = sinon.spy()
-        #wrapped = varity.wrap 's-oo+A', callback
-        #obj = {}
-        #wrapped 'string', obj
-        #callback.calledWith('string', obj, []).should.be.true
+      it 'should work with - on different abbreviations', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 's-oo+A', callback
+        obj = {}
+        wrapped 'string', obj
+        callback.calledWith('string', undefined, obj, []).should.be.true
+
+      it 'should work with - on different types', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 'String', '-Object', 'Object', '+Array', callback
+        obj = {}
+        wrapped 'string', obj
+        callback.calledWith('string', undefined, obj, []).should.be.true
+
+      it 'should work with - on the same abbreviation', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 's-+oo', callback
+        obj =
+          one: 1
+          two: 2
+        wrapped 'string', obj
+        callback.calledWith('string', {}, obj).should.be.true
+
+      it 'should work with - on the same type', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 'String', '-+Object', 'Object', callback
+        obj =
+          one: 1
+          two: 2
+        wrapped 'string', obj
+        callback.calledWith('string', {}, obj).should.be.true
+
+      it 'should work with - the other way around', ->
+        callback = sinon.spy()
+        wrapped = varity.wrap 'String', '+-Object', 'Object', callback
+        obj =
+          one: 1
+          two: 2
+        wrapped 'string', obj
+        callback.calledWith('string', {}, obj).should.be.true
