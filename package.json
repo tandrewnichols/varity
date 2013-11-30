@@ -12,7 +12,8 @@
     "test": "mocha test --compilers coffee:coffee-script"
   },
   "dependencies": {
-    "underscore": "*"
+    "underscore": "*",
+    "config-extend": "*"
   },
   "devDependencies": {
     "coffee-script": "*",

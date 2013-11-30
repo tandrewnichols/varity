@@ -1070,3 +1070,51 @@ describe 'varity', ->
           two: 2
         wrapped 'string', obj
         callback.calledWith('string', {}, obj).should.be.true
+
+  describe '#init', ->
+    afterEach ->
+      varity.reset()
+
+    context 'called with letters', ->
+      it 'should add new letters', ->
+        callback = sinon.spy()
+        varity.init
+          letters:
+            'X': 'XtraLg'
+        wrapped = varity.wrap ' Xo', callback
+        class XtraLg
+        x = new XtraLg()
+        obj = {}
+        wrapped x, obj
+
+      it 'should override changed letters', ->
+        callback = sinon.spy()
+        varity.init
+          letters:
+            'a': 'Array',
+            'A': 'Arguments'
+        wrapped = varity.wrap 'a', callback
+        arr = []
+        wrapped arr
+        callback.calledWith(arr).should.be.true
+
+    context 'called with populate', ->
+      it 'should allow new items', ->
+        callback = sinon.spy()
+        class Foo
+        varity.init
+          populate:
+           'Foo': ->
+              return new Foo();
+        wrapped = varity.wrap '+Foo', callback
+        wrapped()
+        callback.args[0][0].should.be.an.instanceOf(Foo)
+
+      it 'should allow overrides', ->
+        callback = sinon.spy()
+        varity.init
+          populate:
+            'Array': ['one', 'two']
+        wrapped = varity.wrap '+Array', callback
+        wrapped()
+        callback.calledWith(['one', 'two']).should.be.true
