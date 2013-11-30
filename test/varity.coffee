@@ -1013,3 +1013,33 @@ describe 'varity', ->
         wrapped = varity.wrap 'oAs', @callback
         wrapped()
         @callback.calledWith({}, [], undefined).should.be.true
+
+    context 'called with a combination of options', ->
+      it 'should be configured correctly', ->
+        class FooBaby
+          birth: ->
+            return 'FOO BABY!'
+        varity.configure
+          expand: ['Object', 'Date']
+          populate:
+            'Date': ->
+              return new Date(1999, 11, 31)
+            'Error': ->
+              return new Error('Mischief is afoot')
+            'FooBaby': ->
+              return new FooBaby().birth()
+          letters:
+            '~': 'FooBaby'
+        wrapped = varity.wrap 'Object', 'Date', 'Error', '-+Error', ' +~', @callback
+        wrapped()
+        args = @callback.args[0]
+        args[0].should.eql({})
+        args[1].should.be.an.instanceOf(Date)
+        args[1].getFullYear().should.equal(1999)
+        args[1].getMonth().should.equal(11)
+        args[1].getDate().should.equal(31)
+        should.equal(args[2], undefined)
+        args[3].should.be.an.instanceOf(Error)
+        args[3].message.should.equal('Mischief is afoot')
+        args[4].should.equal('FOO BABY!')
+        
