@@ -1013,12 +1013,3 @@ describe 'varity', ->
         wrapped = varity.wrap 'oAs', @callback
         wrapped()
         @callback.calledWith({}, [], undefined).should.be.true
-
-    context 'called with alwaysMinus', ->
-      it.only 'should invert the way - works', ->
-        varity.configure
-          alwaysMinus: true
-        wrapped = varity.wrap 'soo', @callback
-        obj = {}
-        wrapped 'string', obj
-        @callback.calledWith('string', undefined, obj).should.be.true
