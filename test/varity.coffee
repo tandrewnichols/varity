@@ -940,6 +940,19 @@ describe 'varity', ->
         wrapped 'string', obj
         @callback.calledWith('string', {}, obj).should.be.true
 
+    context 'called with non-empty indicator', ->
+      afterEach ->
+        varity.reset()
+
+      it 'should expand an empty object', ->
+        varity.configure
+          populate:
+            'Object':
+              'not': 'empty'
+        wrapped = varity.wrap 's_o', @callback
+        wrapped 'string', {}
+        @callback.calledWith('string', not: 'empty').should.be.true
+
   describe '#reset', ->
     it 'should restore the defaults', ->
       callback2 = sinon.spy()
