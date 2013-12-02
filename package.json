@@ -8,6 +8,8 @@
     "url": "git://github.com/tandrewnichols/varity.git"
   },
   "homepage": "https://github.com/tandrewnichols/varity",
+  "bugs": "https://github.com/tandrewnichols/varity/issues",
+  "license": "MIT",
   "scripts": {
     "test": "mocha test --compilers coffee:coffee-script"
   },
@@ -23,5 +25,5 @@
     "jsdom": "*"
   },
   "keywords": ["arity", "arguments", "parameters"],
-  "main": "./lib/varity"
+  "main": "./lib/varity.js"
 }

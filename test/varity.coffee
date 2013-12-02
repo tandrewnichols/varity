@@ -9,10 +9,10 @@ describe 'varity', ->
   beforeEach ->
     @callback = sinon.spy()
 
-  it 'should return a object with functions', ->
+  it 'should return a functions', ->
     varity.should.be.a.Function
 
-  describe '#wrap', ->
+  describe '#varity', ->
     it 'should wrap the passed function', ->
       wrapped = varity @callback
       wrapped.should.be.a.Function
@@ -487,9 +487,9 @@ describe 'varity', ->
           callback.calledWith(el).should.be.true
           done()
         
-      it 'should accept j', (done) ->
+      it 'should accept $', (done) ->
         callback = @callback
-        wrapped = varity 'j', @callback
+        wrapped = varity '$', @callback
         jsdom.env '<div id="1"></div><div id="2"></div><div id="3"></div>', ["http://code.jquery.com/jquery.js"], (e, window) ->
           elems = window.$('div')
           wrapped elems
