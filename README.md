@@ -38,7 +38,7 @@ var wrapped = $('String', 'Object', function(url, options) {
 });
 ```
 
-Now, if you call wrapped with a string and an object, it will pass them on to your function (nothing fantastic about that part). However, if you call wrapped with only a string, varity will pass the string and `undefined` to your function. I know you're thinking "Javascript does that by default. Why should I add this extra layer of abstraction?" Here's where it's useful: if you pass only an object to the wrapped function, varity will pass `undefined` and the object as parameters to the function. No need to test `if (typeof url === 'object')`!
+Now, if you call wrapped with a string and an object, it will pass them on to your function (nothing fantastic about that part). However, if you call wrapped with only a string, varity will pass the string and `undefined` to your function. I know you're thinking "Javascript does that by default. Why should I add this extra layer of abstraction?" Here's where it's useful: if you pass only an object to the wrapped function, varity will pass `undefined` as the first parameter and the object as the second parameter. No need to test `if (typeof url === 'object')`!
 
 Varity recognizes (out of the box) the following types:
 
@@ -69,7 +69,7 @@ var wrapped = $(Array, Function, function(list, callback) {
 });
 ```
 
-You can pass any of the string types that are recognized javascript types (so not arguments or element). Use `null` for Null and `undefined` for Undefined (though there's not of value in expecting these in functions).
+You can pass any of the string types that are recognized javascript types (so not arguments or element). Use `null` for Null and `undefined` for Undefined (though there's not much value in expecting these in functions).
 
 #### With string abbreviations
 
@@ -83,7 +83,7 @@ The following abbreviations are recognized by varity:
 
 * s: String
 * f: Function
-* o: AnonObject
+* o: Object
 * A: Array
 * 1: Number
 * b: Boolean
@@ -122,10 +122,11 @@ var wrapped = $(['String', 'Function'], function(name, callback) {
 });
 ```
 
-The elements of the array can be strings of types or even other arrays (nested arrays are flattened). You can even mix types:
+The elements of the array can be strings or types or even other arrays (nested arrays are flattened). You can even mix types:
 
 ```javascript
 var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . */) {
-  // . . .
+  // So we're expecting a string, a function, an array, another
+  // string, another function, and an object. Time to refactor.
 });
 ```
