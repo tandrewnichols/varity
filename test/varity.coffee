@@ -952,6 +952,13 @@ describe 'varity', ->
         wrapped 'string', {}
         @callback.calledWith('string', not: 'empty').should.be.true
 
+    context 'called with required indicator', ->
+      it 'should throw an error if the required parameter is undefined', ->
+        wrapped = varity '*String', @callback
+        (->
+          wrapped()
+        ).should.throw('A required parameter was missing from the wrapped function')
+
   describe '#reset', ->
     it 'should restore the defaults', ->
       callback2 = sinon.spy()
