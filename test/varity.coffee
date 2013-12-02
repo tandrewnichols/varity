@@ -478,6 +478,24 @@ describe 'varity', ->
         wrapped e
         @callback.calledWith(e).should.be.true
 
+      it 'should accept E', (done) ->
+        callback = @callback
+        wrapped = varity ' E', @callback
+        jsdom.env '<div id="id"></div>', (e, window) ->
+          el = window.document.getElementById('id')
+          wrapped el
+          callback.calledWith(el).should.be.true
+          done()
+        
+      it 'should accept j', (done) ->
+        callback = @callback
+        wrapped = varity 'j', @callback
+        jsdom.env '<div id="1"></div><div id="2"></div><div id="3"></div>', ["http://code.jquery.com/jquery.js"], (e, window) ->
+          elems = window.$('div')
+          wrapped elems
+          callback.calledWith(elems).should.be.true
+          done()
+
       it 'should accept a mix of letters', ->
         wrapped = varity 'sfo1ne', @callback
         fn = ->
