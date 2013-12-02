@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tandrewnichols/varity.png)](https://travis-ci.org/tandrewnichols/varity)
+
 # Varity
 
 Javascript arity simplified.
