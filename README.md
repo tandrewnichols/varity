@@ -40,7 +40,7 @@ var wrapped = $('String', 'Object', function(url, options) {
 });
 ```
 
-Now, if you call wrapped with a string and an object, it will pass them on to your function (nothing fantastic about that part). However, if you call wrapped with only a string, varity will pass the string and `undefined` to your function. I know you're thinking "Javascript does that by default. Why should I add this extra layer of abstraction?" Here's where it's useful: if you pass only an object to the wrapped function, varity will pass `undefined` as the first parameter and the object as the second parameter. No need to test `if (typeof url === 'object')`!
+Now, if you call `wrapped` with a string and an object, it will pass them on to your function (nothing fantastic about that part). However, if you call `wrapped` with only a string, varity will pass the string and `undefined` to your function. I know you're thinking "Javascript does that by default. Why should I add this extra layer of abstraction?" Here's where it's useful: if you pass only an object to the wrapped function, varity will pass `undefined` as the first parameter and the object as the second parameter. No need to test `if (typeof url === 'object')`!
 
 Varity recognizes (out of the box) the following types:
 
@@ -61,7 +61,13 @@ Varity recognizes (out of the box) the following types:
 * Element (a DOM element)
 * jQuery
 
-Additionally, you can pass custom types as strings. Varity will build a simple _ mixin method to test objects you pass it for your object type.
+Additionally, you can pass custom types as strings. Varity will build a simple _ mixin method to test objects you pass it for your object type. For instance:
+
+```javascript
+var wrapped = $('Foo', function(foo) {
+  // Creates an _ mixin method called 'isFoo'
+});
+```
 
 ### With actual types
 
@@ -74,6 +80,8 @@ var wrapped = $(Array, Function, function(list, callback) {
 You can pass any of the string types that are recognized javascript types (so not arguments or element). Use `null` for Null and `undefined` for Undefined (though there's not much value in expecting these in functions).
 
 ### With string abbreviations
+
+To keep calls to varity short, all built in types have one character analogs that can be passed collectively as a single string:
 
 ```javascript
 var wrapped = $('ssf', function(fname, lname, callback) {
@@ -135,13 +143,9 @@ var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . 
 
 ### With objects
 ```javascript
-var wrapped = $({
-    type: 'String'
-  }, {
-    type: 'Array'
-  }, function(name, hobbies) {
-    // . . .
-  });
+var wrapped = $({ type: 'String' }, { type: 'Array' }, function(name, hobbies) {
+  // . . .
+});
 ```
 
 There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the flags you can pass with parameters.
@@ -178,16 +182,14 @@ var wrapped = $('String', '-Object', 'Object', 'Function', function(id, services
 
 ### Populate: +
 
-Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means the use of type-specific methods on that parameter has to be wrapped in an `if`. For example,
+Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means that type-specific methods on that parameter have to be wrapped in an `if`. For example,
 
 ```javascript
 var wrapped $('Array', function(list) {
-  if (list) {
-    list.push('something new');
-  }
+  list.push('something else'); // Fails if list is undefined. Need to check if (list) first
 });
 ```
 
-You can tell varity to return something that makes sense (given the type) instead of `undefined` by prefixing it with `+`. The built in defaults are as follows (though you can override them - keep reading):
+You can tell varity to return something that makes sense (given the type) instead of `undefined` by prefixing it with `+`. The built in defaults are as follows (though you can override them - more on that later).
 
 
