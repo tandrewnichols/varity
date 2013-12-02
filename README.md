@@ -143,3 +143,5 @@ var wrapped = $({
 ```
 
 There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the other things you can do with string abbreviations.
+
+## Getting the most out of string abbreviations
