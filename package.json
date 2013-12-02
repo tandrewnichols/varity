@@ -25,5 +25,8 @@
     "jsdom": "*"
   },
   "keywords": ["arity", "arguments", "parameters"],
-  "main": "./lib/varity.js"
+  "main": "./lib/varity.js",
+  "engines": {
+    "node": ">=0.8.0"
+  }
 }
