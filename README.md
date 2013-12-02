@@ -127,7 +127,7 @@ The elements of the array can be strings or types or even other arrays (nested a
 ```javascript
 var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . */) {
   // So we're expecting a string, a function, an array, another
-  // string, another function, and an object. Time to refactor.
+  // string, another function, and an object. Time to refactor...
 });
 ```
 
@@ -144,4 +144,48 @@ var wrapped = $({
 
 There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the other things you can do with string abbreviations.
 
-## Getting the most out of string abbreviations
+## Flags
+
+You can pass the following flags to tell Varity how to deal with the arguments it receives. Note that you have to use string types or string abbreviations for this to work (since, for example, `-String` will be a problem for the javascript compiler).
+
+### Optional: -
+
+Normally, if you pass two of the same type next to each other, Varity will assign the first parameter that matches that type to the first argument and leave the second undefined.
+
+```javascript
+var wrapped = $('soof', function(id, services, options, callback) {
+  // . . .
+});
+```
+
+If you call this with a string, an object, and a function, `services` will be the object and `options` will be undefined. If you want to reverse this behavior, prefix the first 'o' with `-` (which tells varity that it is optional).
+
+```javascript
+var wrapped = $('s-oof', function(id, services, options, callback) {
+  // Now if only one object is passed, it'll be set to options.
+});
+```
+
+Or
+
+```javascript
+var wrapped = $('String', '-Object', 'Object', 'Function', function(id, services, options, callback) {
+  // . . .
+});
+```
+
+### Populate: +
+
+Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means the use of type-specific methods on that parameter has to be wrapped in an `if`. For example,
+
+```javascript
+var wrapped $('Array', function(list) {
+  if (list) {
+    list.push('something new');
+  }
+});
+```
+
+You can tell varity to return something that makes sense (given the type) instead of `undefined` by prefixing it with `+`. The built in defaults are as follows (though you can override them - keep reading):
+
+
