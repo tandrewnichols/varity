@@ -19,7 +19,8 @@
     "coffee-script": "*",
     "mocha": "*",
     "should": "*",
-    "sinon": "*"
+    "sinon": "*",
+    "jsdom": "*"
   },
   "keywords": ["arity", "arguments", "parameters"],
   "main": "./lib/varity"

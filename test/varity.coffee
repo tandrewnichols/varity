@@ -3,6 +3,7 @@ global.context = global.describe
 varity = require('../lib/varity')
 sinon = require('sinon')
 _ = require('underscore')
+jsdom = require('jsdom')
 
 describe 'varity', ->
   beforeEach ->
@@ -203,6 +204,24 @@ describe 'varity', ->
         e = new Error()
         wrapped e
         @callback.calledWith(e).should.be.true
+
+      it 'should accept Element', (done) ->
+        callback = @callback
+        wrapped = varity 'Element', @callback
+        jsdom.env '<div id="id"></div>', (e, window) ->
+          el = window.document.getElementById('id')
+          wrapped el
+          callback.calledWith(el).should.be.true
+          done()
+
+      it 'should accept jQuery', (done) ->
+        callback = @callback
+        wrapped = varity 'jQuery', @callback
+        jsdom.env '<div id="1"></div><div id="2"></div><div id="3"></div>', ["http://code.jquery.com/jquery.js"], (e, window) ->
+          elems = window.$('div')
+          wrapped elems
+          callback.calledWith(elems).should.be.true
+          done()
 
       it 'should accept multiple string parameters', ->
         obj = {}
