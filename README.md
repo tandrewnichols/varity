@@ -132,6 +132,7 @@ var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . 
 ```
 
 ### With objects
+```javascript
 var wrapped = $({
     type: 'String'
   }, {
@@ -139,5 +140,6 @@ var wrapped = $({
   }, function(name, hobbies) {
     // . . .
   });
+```
 
 There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the other things you can do with string abbreviations.
