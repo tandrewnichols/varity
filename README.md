@@ -23,11 +23,11 @@ Varity ("variable-arity") handles this for you. And it can do some other handy t
 
 `npm install varity`
 
-## Use
+## Basic Use
 
 When you `require('varity')`, you'll get a wrapper function back. Call this function as many times as you need as it instantiates new objects and therefore doesn't lead to object pollution. Basically, you tell this function what you're expecting to receive in your function and pass that function as the last parameter. There are several ways to tell varity what you're expecting.
 
-#### With strings
+### With strings
 
 Pass stringified types as separate parameters:
 
@@ -61,7 +61,7 @@ Varity recognizes (out of the box) the following types:
 
 Additionally, you can pass custom types as strings. Varity will build a simple _ mixin method to test objects you pass it for your object type.
 
-#### With actual types
+### With actual types
 
 ```javascript
 var wrapped = $(Array, Function, function(list, callback) {
@@ -71,7 +71,7 @@ var wrapped = $(Array, Function, function(list, callback) {
 
 You can pass any of the string types that are recognized javascript types (so not arguments or element). Use `null` for Null and `undefined` for Undefined (though there's not much value in expecting these in functions).
 
-#### With string abbreviations
+### With string abbreviations
 
 ```javascript
 var wrapped = $('ssf', function(fname, lname, callback) {
@@ -114,7 +114,7 @@ var wrapped = $(' Ao', function(list, obj) {
 });
 ```
 
-#### With an array
+### With an array
 
 ```javascript
 var wrapped = $(['String', 'Function'], function(name, callback) {
@@ -130,3 +130,14 @@ var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . 
   // string, another function, and an object. Time to refactor.
 });
 ```
+
+### With objects
+var wrapped = $({
+    type: 'String'
+  }, {
+    type: 'Array'
+  }, function(name, hobbies) {
+    // . . .
+  });
+
+There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the other things you can do with string abbreviations.
