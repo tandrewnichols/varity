@@ -1000,6 +1000,11 @@ describe 'varity', ->
         wrapped 'string', {}
         @callback.calledWith('string', not: 'empty').should.be.true
 
+      it 'should expand undefined', ->
+        wrapped = varity 's_A', @callback
+        wrapped 'string'
+        @callback.calledWith('string', []).should.be.true
+
     context 'called with required indicator', ->
       it 'should throw an error if the required parameter is undefined', ->
         wrapped = varity '*String', @callback

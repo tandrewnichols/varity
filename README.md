@@ -305,3 +305,23 @@ function() {
   }
 }
 ```
+
+The Element and jQuery defaults when NOT in the browser aren't perfect, but you probably aren't using either one in node so it doesn't really matter.
+
+You can also combine `populate` with `optional`:
+
+```javascript
+var wrapped = $('s-+oo', function(str, obj1, obj2) {
+  // If passed only 'string' and {one: 1}, arguments will be
+  // 'string', {}, {one: 1}
+});
+```
+
+### Non-empty: _
+
+The non-empty flag tells varity to treat "empty" parameters as if they were undefined.
+
+
+### TODO:
+1. Allow config to be passed as second to last option for changes to individual wrappers.
+2. Make usable for browser
