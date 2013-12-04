@@ -941,10 +941,15 @@ describe 'varity', ->
         @callback.args[0][1].message.should.equal('')
 
       # TODO: How to spy on window.document?
-      it.skip 'should convert E to document', ->
+      it 'should convert E to document', ->
         wrapped = varity 's+E', @callback
         wrapped 'string'
-        _.isElement(@callback.args[0][1]).should.be.true
+        @callback.calledWith('string', '<div></div>').should.be.true
+
+      it 'should convert $ to $(document)', ->
+        wrapped = varity 's+$', @callback
+        wrapped 'string'
+        @callback.calledWith('string', []).should.be.true
 
       it 'should work with - on different abbreviations', ->
         wrapped = varity 's-oo+A', @callback
