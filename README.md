@@ -200,28 +200,35 @@ You can tell varity to return something that makes sense (given the type) instea
 * Boolean: `false`
 * RegExp: `/.*/`
 * Date: 
+
 ```javascript
     function() {
       return new Date();
     }
 ```
+
 * NaN: `NaN`
 * Null: `null`
 * Undefined: `undefined`
 * Arguments: 
+
 ```javascript
     (function(){
       return arguments;
     })(undefined)
 ```
+
 * Infinity: `2/0`
 * Error: 
+
 ```javascript
     function() {
       return new Error();
     }
 ```
+
 * Element:
+
 ```javascript
     function() {
       if (typeof window !== 'undefined') {
@@ -231,7 +238,9 @@ You can tell varity to return something that makes sense (given the type) instea
       }
     }
 ```
+
 * jQuery:
+
 ```javascript
     function() {
       if (typeof $ !== 'undefined') {
