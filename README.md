@@ -192,61 +192,116 @@ var wrapped $('Array', function(list) {
 
 You can tell varity to return something that makes sense (given the type) instead of `undefined` by prefixing it with `+`. The built in defaults are as follows (though you can override them - more on that later).
 
-* String: `''`
-* Function: `function(){}`
-* Object: `{}`
-* Array: `[]`
-* Number: `0`
-* Boolean: `false`
-* RegExp: `/.*/`
-* Date: 
+* String
 
 ```javascript
-    function() {
-      return new Date();
-    }
+''
 ```
 
-* NaN: `NaN`
-* Null: `null`
-* Undefined: `undefined`
+* Function
+
+```javascript
+function(){}
+```
+
+* Object
+
+```javascript
+{}
+```
+
+* Array
+
+```javascript
+[]
+```
+
+* Number
+
+```javascript
+0
+```
+
+* Boolean
+
+```javascript
+false
+```
+
+* RegExp
+
+```javascript
+/.*/
+```
+
+* Date
+
+```javascript
+function() {
+  return new Date();
+}
+```
+
+* NaN
+
+```javascript
+NaN
+```
+
+* Null
+
+```javascript
+null
+```
+
+* Undefined
+
+```javascript
+undefined
+```
+
 * Arguments: 
 
 ```javascript
-    (function(){
-      return arguments;
-    })(undefined)
+(function(){
+  return arguments;
+})(undefined)
 ```
 
-* Infinity: `2/0`
+* Infinity
+
+```javascript
+2/0
+```
+
 * Error: 
 
 ```javascript
-    function() {
-      return new Error();
-    }
+function() {
+  return new Error();
+}
 ```
 
 * Element:
 
 ```javascript
-    function() {
-      if (typeof window !== 'undefined') {
-        return window.document;
-      } else {
-        return '<div></div>';
-      }
-    }
+function() {
+  if (typeof window !== 'undefined') {
+    return window.document;
+  } else {
+    return '<div></div>';
+  }
+}
 ```
 
 * jQuery:
 
 ```javascript
-    function() {
-      if (typeof $ !== 'undefined') {
-        return $(document);
-      } else {
-        return [];
-      }
-    }
+function() {
+  if (typeof $ !== 'undefined') {
+    return $(document);
+  } else {
+    return [];
+  }
+}
 ```
