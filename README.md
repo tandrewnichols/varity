@@ -319,9 +319,10 @@ var wrapped = $('s-+oo', function(str, obj1, obj2) {
 
 ### Non-empty: _
 
-The non-empty flag tells varity to treat "empty" parameters as if they were undefined.
+The non-empty flag tells varity to treat "empty" parameters as if they were undefined. This isn't that useful except in conjunction with the populate option below. If you tell varity to populate with some other default and use the _ flag, varity will replace an empty type (e.g. `{}`, `[]`, `function() {}`, etc.) with your default.
 
 
 ### TODO:
 1. Allow config to be passed as second to last option for changes to individual wrappers.
 2. Make usable for browser
+3. Contain key for checking objs

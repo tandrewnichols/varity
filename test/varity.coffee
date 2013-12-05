@@ -627,7 +627,6 @@ describe 'varity', ->
         class Foo
         wrapped = varity
           type: 'Foo'
-          expand: true
           default: ->
             return new Foo()
         , @callback
@@ -638,7 +637,6 @@ describe 'varity', ->
         class Foo
         wrapped = varity
           type: Foo
-          expand: true
           default: ->
             return new Foo()
         , @callback
@@ -648,12 +646,28 @@ describe 'varity', ->
       it 'should accept default on built in types', ->
         wrapped = varity
           type: 'Object'
-          expand: true
           default: ->
             return one: 1
         , @callback
         wrapped()
         @callback.calledWith(one: 1).should.be.true
+
+      it 'should accept non-function defaults', ->
+        wrapped = varity
+          type: 'Array'
+          default: ['one', 'two']
+        , @callback
+        wrapped()
+        @callback.calledWith(['one', 'two']).should.be.true
+
+      it 'should not override expand if passed together', ->
+        wrapped = varity
+          type: 'Array'
+          expand: false
+          default: ['one', 'two']
+        , @callback
+        wrapped()
+        @callback.calledWith(undefined).should.be.true
 
       it 'should accept a mix of objects', ->
         wrapped = varity
@@ -993,7 +1007,7 @@ describe 'varity', ->
 
       it 'should expand an empty object', ->
         varity.configure
-          populate:
+          defaults:
             'Object':
               'not': 'empty'
         wrapped = varity 's_o', @callback
@@ -1052,11 +1066,11 @@ describe 'varity', ->
         wrapped arr
         @callback.calledWith(arr).should.be.true
 
-    context 'called with populate', ->
+    context 'called with defaults', ->
       it 'should allow new items', ->
         class Foo
         varity.configure
-          populate:
+          defaults:
            'Foo': ->
               return new Foo()
         wrapped = varity '+Foo', @callback
@@ -1065,7 +1079,7 @@ describe 'varity', ->
 
       it 'should allow overrides', ->
         varity.configure
-          populate:
+          defaults:
             'Array': ['one', 'two']
         wrapped = varity '+Array', @callback
         wrapped()
@@ -1093,7 +1107,7 @@ describe 'varity', ->
             return 'FOO BABY!'
         varity.configure
           expand: ['Object', 'Date']
-          populate:
+          defaults:
             'Date': ->
               return new Date(1999, 11, 31)
             'Error': ->
