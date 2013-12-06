@@ -319,10 +319,51 @@ var wrapped = $('s-+oo', function(str, obj1, obj2) {
 
 ### Non-empty: _
 
-The non-empty flag tells varity to treat "empty" parameters as if they were undefined. This isn't that useful except in conjunction with the populate option below. If you tell varity to populate with some other default and use the _ flag, varity will replace an empty type (e.g. `{}`, `[]`, `function() {}`, etc.) with your default.
+The non-empty flag tells varity to treat "empty" parameters as if they were undefined. This isn't that useful except in conjunction with the populate option below. If you tell varity to populate a type with some other default and use the _ flag, varity will replace an empty type (e.g. `{}`, `[]`, `function() {}`, etc.) with the default of that type.
 
+```javascript
+var options = {
+  dataType: 'json',
+  method: 'put'
+};
+
+var wrapped = $('s_o, { defaults: { 'Object': options } }, function(url, opts) {
+  // see below for more about options
+});
+wrapped('something.com', {}); // Varity will use the default options defined above
+```
+
+### Required: *
+
+Mark a parameter as required. If that parameter is not passed, Varity will throw an exception.
+
+```javascript
+var wrapped = $(' *so', function(name, options) {
+  // . . .
+});
+wrapped({ async: true }); // throw
+```
+
+Note that you if your first argument (using abbreviations) uses a flag,  you need to prefix it with a space (as with initial capital letters).
+
+### Flags with objects
+
+Passing flags with objects means passing the corresponding keys: "optional," "populate," "required," and "nonEmpty". Additionally, you can pass a "default" to tell varity what to populate empty arguments with.
+
+```javascript
+var wrapped = $(
+  { type: Object, optional: true },
+  { type: Object, populate: true },
+  { type: String, required: true },
+  { type: Array, nonEmpty: true, default: ['one', 'two'] },
+  function(obj1, obj2, str, arr) {
+    // Do stuff
+  }
+);
+```
+
+## Options
 
 ### TODO:
-1. Allow config to be passed as second to last option for changes to individual wrappers.
-2. Make usable for browser
-3. Contain key for checking objs
+1. Make usable for browser
+2. Contain key for checking objs
