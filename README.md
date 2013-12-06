@@ -182,15 +182,25 @@ var wrapped = $('String', '-Object', 'Object', 'Function', function(id, services
 
 ### Populate: +
 
-Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means that type-specific methods on that parameter have to be wrapped in an `if`. For example,
+Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means that type-specific methods on that parameter have to be wrapped in an `if`. For example, the following fails if `list` is undefined.
 
 ```javascript
 var wrapped $('Array', function(list) {
-  list.push('something else'); // Fails if list is undefined. Need to check if (list) first
+  list.push('something else');
 });
 ```
 
-You can tell varity to return something that makes sense (given the type) instead of `undefined` by prefixing it with `+`. The built in defaults are as follows (though you can override them - more on that later).
+We'd normally do
+
+```javascript
+var wrapped $('Array', function(list) {
+  if (list) {
+    list.push('something else');
+  }
+});
+```
+
+to get around that. Instead, you can tell varity to return something that makes sense (given the type) by prefixing it with `+`. The built in defaults are as follows (though you can override them - more on that later).
 
 * String
 
@@ -327,7 +337,7 @@ var options = {
   method: 'put'
 };
 
-var wrapped = $('s_o, { defaults: { 'Object': options } }, function(url, opts) {
+var wrapped = $('s_o', { defaults: { 'Object': options } }, function(url, opts) {
   // see below for more about options
 });
 wrapped('something.com', {}); // Varity will use the default options defined above
@@ -341,7 +351,7 @@ Mark a parameter as required. If that parameter is not passed, Varity will throw
 var wrapped = $(' *so', function(name, options) {
   // . . .
 });
-wrapped({ async: true }); // throw
+wrapped({ async: true }); // throws
 ```
 
 Note that you if your first argument (using abbreviations) uses a flag,  you need to prefix it with a space (as with initial capital letters).
