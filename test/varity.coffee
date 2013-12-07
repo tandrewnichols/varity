@@ -600,19 +600,19 @@ describe 'varity', ->
       wrapped obj
       @callback.calledWith(undefined, {}).should.be.true
 
-    it 'should accept expand', ->
+    it 'should accept populate', ->
       wrapped = varity
         type: 'Object',
-        expand: true
+        populate: true
       , @callback
       wrapped()
       @callback.calledWith({}).should.be.true
 
-    it 'should accept expand and optional', ->
+    it 'should accept populate and optional', ->
       wrapped = varity
         type: 'Object'
         optional: 'true',
-        expand: 'true'
+        populate: 'true'
       ,
         type: 'Object'
       , @callback
@@ -659,10 +659,10 @@ describe 'varity', ->
       wrapped()
       @callback.calledWith(['one', 'two']).should.be.true
 
-    it 'should not override expand if passed together', ->
+    it 'should not override populate if passed together', ->
       wrapped = varity
         type: 'Array'
-        expand: false
+        populate: false
         default: ['one', 'two']
       , @callback
       wrapped()
@@ -678,7 +678,7 @@ describe 'varity', ->
         type: 'Object'
       ,
         type: 'String'
-        expand: 'true'
+        populate: 'true'
       , @callback
       arr = []
       obj = one: 1
@@ -688,7 +688,7 @@ describe 'varity', ->
     it 'should accept objects with other parameters', ->
       wrapped = varity 's-o', Object,
         type: 'Array',
-        expand: true
+        populate: true
         default: -> ['one', 'two']
       , [ '-+String', 'String']
       , @callback
@@ -715,7 +715,7 @@ describe 'varity', ->
     it 'should accept a variety of options', ->
       class Foo
       wrapped = varity 's~oA',
-        expand: ['object', 'array']
+        populate: ['object', 'array']
         letters:
           '~': 'Foo'
         defaults:
@@ -1130,17 +1130,17 @@ describe 'varity', ->
         wrapped()
         @callback.calledWith(['one', 'two']).should.be.true
 
-    context 'called with expand', ->
+    context 'called with populate', ->
       it 'should expand any missing params', ->
         varity.configure
-          expand: true
+          populate: true
         wrapped = varity 'so', @callback
         wrapped 'string'
         @callback.calledWith('string', {}).should.be.true
 
       it 'should expand passed in param types', ->
         varity.configure
-          expand: ['Array', 'Object']
+          populate: ['Array', 'Object']
         wrapped = varity 'oAs', @callback
         wrapped()
         @callback.calledWith({}, [], undefined).should.be.true
@@ -1151,7 +1151,7 @@ describe 'varity', ->
           birth: ->
             return 'FOO BABY!'
         varity.configure
-          expand: ['Object', 'Date']
+          populate: ['Object', 'Date']
           defaults:
             'Date': ->
               return new Date(1999, 11, 31)
