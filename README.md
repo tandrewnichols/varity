@@ -378,14 +378,14 @@ There are a couple ways to configure varity (besides passing objects, as above):
 
 ### varity.configure
 
-Use `varity.configure` for one time, initial setup. All calls to `varity()` after that will use whatever options you pass to configure. You can pass the following options to varity:
+Use `varity.configure` for one time, initial setup. All calls to `varity()` after that will use whatever options you pass. You can pass the following options to `varity.configure`:
 
-* letters - add custom abbreviations or ovveride default ones
+* letters - add custom abbreviations or override default ones
 * defaults - override built in defaults or provide defaults for custom types
 * populate - turn on `populate` for all types (with `true`) or a set of types (with an array) so that you don't have to use the `+` flag
  
 ```javascript
-var $ = require('varity')
+var $ = require('varity');
 $.configure({
   letters: {
     '~': 'Foo',
@@ -409,7 +409,7 @@ $.configure({
   /*
    * OR
    *
-   * popualte: ['Object', 'Array', 'Foo']
+   * populate: ['Object', 'Array', 'Foo']
    *
    * to always populate ONLY these types
    */
@@ -423,7 +423,17 @@ Note that these options will be used for EVERY call to varity. If you need to un
 The last parameter to varity has to be the actual function to wrap, but if you use strings to define the expected arguments, you can also pass an object of one-time options. The available options are the same as above.
 
 ```javascript
-var wrapped = $('soo~', { populate: ['Object'], defaults: { 'Object': { name: localStorage.get('name') } }, letters: { '~': 'Foo' } }, function(str, obj1, obj2, foo) {
+var wrapped = $('soo~', {
+  populate: ['Object'],
+  defaults: {
+    'Object': {
+      name: localStorage.get('name')
+    }
+  },
+  letters:{
+    '~': 'Foo'
+  }
+}, function(str, obj1, obj2, foo) {
   // . . .
 });
 ```
