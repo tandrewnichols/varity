@@ -9,6 +9,9 @@ describe 'varity', ->
   beforeEach ->
     @callback = sinon.spy()
 
+  afterEach ->
+    varity.reset()
+
   it 'should return a functions', ->
     varity.should.be.a.Function
 
@@ -801,7 +804,7 @@ describe 'varity', ->
         @callback.calledWith(fn, undefined, undefined, arr).should.be.true
 
     context 'called more than once', ->
-      it 'should reset expectations and work correctly', ->
+      it 'should allow multiple functions to be wrapped', ->
         @callback1 = sinon.spy()
         @callback2 = sinon.spy()
         wrapped1 = varity 'soA', @callback1
@@ -815,6 +818,26 @@ describe 'varity', ->
         wrapped2 fn, e, date
         @callback1.calledWith('string', obj, arr).should.be.true
         @callback2.calledWith(fn, e, date).should.be.true
+
+      it 'should allow the same wrapper to be called more than once', ->
+        wrapped = varity 'so', @callback
+        wrapped 'string'
+        obj = {}
+        wrapped obj
+        @callback.getCall(0).args[0].should.equal('string')
+        should.equal(@callback.getCall(0).args[1], undefined)
+        should.equal(@callback.getCall(1).args[0], undefined)
+        @callback.getCall(1).args[1].should.equal(obj)
+
+      it 'should keep the same options when configure is used', ->
+        varity.configure populate: ['Object']
+        @callback2 = sinon.spy()
+        wrapped1 = varity 'o', @callback
+        wrapped2 = varity 'so', @callback2
+        wrapped1()
+        wrapped2 'string'
+        @callback.calledWith({}).should.be.true
+        @callback2.calledWith('string', {}).should.be.true
 
     context 'called with object expansion', ->
       it 'should convert s to \'\'', ->
@@ -1030,9 +1053,6 @@ describe 'varity', ->
         @callback.calledWith('string', {}, obj).should.be.true
 
     context 'called with non-empty indicator', ->
-      afterEach ->
-        varity.reset()
-
       it 'should expand an empty object', ->
         varity.configure
           defaults:
@@ -1087,9 +1107,6 @@ describe 'varity', ->
       callback2.calledWith(arr).should.be.true
 
   describe '#configure', ->
-    afterEach ->
-      varity.reset()
-
     context 'called with letters', ->
       it 'should add new letters', ->
         varity.configure
