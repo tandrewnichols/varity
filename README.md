@@ -437,7 +437,3 @@ var wrapped = $('soo~', {
   // . . .
 });
 ```
-
-### TODO:
-1. Make usable for browser
-2. Contain key for checking objs
