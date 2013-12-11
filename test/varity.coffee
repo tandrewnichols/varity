@@ -12,7 +12,7 @@ describe 'varity', ->
   afterEach ->
     varity.reset()
 
-  it 'should return a functions', ->
+  it 'should return a function', ->
     varity.should.be.a.Function
 
   it 'should wrap the passed function', ->
