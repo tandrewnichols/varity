@@ -1,171 +1,171 @@
 should = require('should')
 global.context = global.describe
-varity = require('../lib/varity')
+$ = require('../lib/varity')
 sinon = require('sinon')
 _ = require('underscore')
 jsdom = require('jsdom')
 
-describe 'varity', ->
+describe '$', ->
   beforeEach ->
     @callback = sinon.spy()
 
   afterEach ->
-    varity.reset()
+    $.reset()
 
   it 'should return a function', ->
-    varity.should.be.a.Function
+    $.should.be.a.Function
 
   it 'should wrap the passed function', ->
-    wrapped = varity @callback
+    wrapped = $ @callback
     wrapped.should.be.a.Function
     wrapped()
     @callback.called.should.be.true
 
   it 'should throw if passed no arguments', ->
     (->
-      varity()
+      $()
     ).should.throw('No function passed to varity')
 
   it 'should throw if the last argument is not a function', ->
     (->
-      varity({})
+      $({})
     ).should.throw('Last argument is not a function')
 
   context 'called with string types', ->
     it 'should accept string', ->
-      wrapped = varity 'string', @callback
+      wrapped = $ 'string', @callback
       wrapped 'something'
       @callback.calledWith('something').should.be.true
 
     it 'should accept String', ->
-      wrapped = varity 'String', @callback
+      wrapped = $ 'String', @callback
       wrapped 'something'
       @callback.calledWith('something').should.be.true
 
     it 'should accept function', ->
       fn = sinon.spy()
-      wrapped = varity 'function', @callback
+      wrapped = $ 'function', @callback
       wrapped(fn)
       @callback.calledWith(fn).should.be.true
 
     it 'should accept Function', ->
       fn = sinon.spy()
-      wrapped = varity 'Function', @callback
+      wrapped = $ 'Function', @callback
       wrapped(fn)
       @callback.calledWith(fn).should.be.true
 
     it 'should accept object', ->
       obj = fake: 'data'
-      wrapped = varity 'object', @callback
+      wrapped = $ 'object', @callback
       wrapped(obj)
       @callback.calledWith(obj).should.be.true
 
     it 'should accept Object', ->
       obj = fake: 'data'
-      wrapped = varity 'Object', @callback
+      wrapped = $ 'Object', @callback
       wrapped(obj)
       @callback.calledWith(obj).should.be.true
 
     it 'should accept array', ->
       arr = [ 'one', 'two' ]
-      wrapped = varity 'array', @callback
+      wrapped = $ 'array', @callback
       wrapped(arr)
       @callback.calledWith(arr).should.be.true
 
     it 'should accept Array', ->
       arr = [ 'one', 'two' ]
-      wrapped = varity 'Array', @callback
+      wrapped = $ 'Array', @callback
       wrapped(arr)
       @callback.calledWith(arr).should.be.true
 
     it 'should accept number', ->
-      wrapped = varity 'number', @callback
+      wrapped = $ 'number', @callback
       wrapped(2)
       @callback.calledWith(2).should.be.true
 
     it 'should accept Number', ->
-      wrapped = varity 'Number', @callback
+      wrapped = $ 'Number', @callback
       wrapped(2)
       @callback.calledWith(2).should.be.true
 
     it 'should accept boolean', ->
-      wrapped = varity 'boolean', @callback
+      wrapped = $ 'boolean', @callback
       wrapped(true)
       @callback.calledWith(true).should.be.true
 
     it 'should accept Boolean', ->
-      wrapped = varity 'Boolean', @callback
+      wrapped = $ 'Boolean', @callback
       wrapped(false)
       @callback.calledWith(false).should.be.true
 
     it 'should accept date', ->
       date = new Date()
-      wrapped = varity 'date', @callback
+      wrapped = $ 'date', @callback
       wrapped(date)
       @callback.calledWith(date).should.be.true
 
     it 'should accept Date', ->
       date = new Date()
-      wrapped = varity 'Date', @callback
+      wrapped = $ 'Date', @callback
       wrapped(date)
       @callback.calledWith(date).should.be.true
 
     it 'should accept regexp', ->
       reg = new RegExp('.*')
-      wrapped = varity 'regexp', @callback
+      wrapped = $ 'regexp', @callback
       wrapped(reg)
       @callback.calledWith(reg).should.be.true
 
     it 'should accept Regexp', ->
       reg = new RegExp('.*')
-      wrapped = varity 'Regexp', @callback
+      wrapped = $ 'Regexp', @callback
       wrapped(reg)
       @callback.calledWith(reg).should.be.true
 
     it 'should accept RegExp', ->
       reg = new RegExp('.*')
-      wrapped = varity 'RegExp', @callback
+      wrapped = $ 'RegExp', @callback
       wrapped(reg)
       @callback.calledWith(reg).should.be.true
 
     it 'should accept nan', ->
       nan = NaN
-      wrapped = varity 'nan', @callback
+      wrapped = $ 'nan', @callback
       wrapped(nan)
       # Checking truthy values of NaN is a pain
       @callback.args[0][0].should.be.NaN
 
     it 'should accept Nan', ->
       nan = NaN
-      wrapped = varity 'Nan', @callback
+      wrapped = $ 'Nan', @callback
       wrapped(nan)
       # Checking truthy values of NaN is a pain
       @callback.args[0][0].should.be.NaN
 
     it 'should accept NaN', ->
       nan = NaN
-      wrapped = varity 'NaN', @callback
+      wrapped = $ 'NaN', @callback
       wrapped(nan)
       # Checking truthy values of NaN is a pain
       @callback.args[0][0].should.be.NaN
 
     it 'should accept null', ->
-      wrapped = varity 'null', @callback
+      wrapped = $ 'null', @callback
       wrapped(null)
       @callback.calledWith(null).should.be.true
 
     it 'should accept Null', ->
-      wrapped = varity 'Null', @callback
+      wrapped = $ 'Null', @callback
       wrapped(null)
       @callback.calledWith(null).should.be.true
 
     it 'should accept undefined', ->
-      wrapped = varity 'undefined', @callback
+      wrapped = $ 'undefined', @callback
       wrapped(undefined)
       @callback.calledWith(undefined).should.be.true
 
     it 'should accept Undefined', ->
-      wrapped = varity 'Undefined', @callback
+      wrapped = $ 'Undefined', @callback
       wrapped(undefined)
       @callback.calledWith(undefined).should.be.true
 
@@ -173,7 +173,7 @@ describe 'varity', ->
       args = (->
         arguments
       ) 'one', 'two'
-      wrapped = varity 'arguments', @callback
+      wrapped = $ 'arguments', @callback
       wrapped(args)
       @callback.calledWith(args).should.be.true
 
@@ -181,35 +181,35 @@ describe 'varity', ->
       args = (->
         arguments
       ) 'one', 'two'
-      wrapped = varity 'Arguments', @callback
+      wrapped = $ 'Arguments', @callback
       wrapped(args)
       @callback.calledWith(args).should.be.true
 
     it 'should accept infinity', ->
-      wrapped = varity 'infinity', @callback
+      wrapped = $ 'infinity', @callback
       wrapped(Infinity)
       @callback.calledWith(Infinity).should.be.true
 
     it 'should accept Infinity', ->
-      wrapped = varity 'Infinity', @callback
+      wrapped = $ 'Infinity', @callback
       wrapped(Infinity)
       @callback.calledWith(Infinity).should.be.true
 
     it 'should accept error', ->
-      wrapped = varity 'error', @callback
+      wrapped = $ 'error', @callback
       e = new Error()
       wrapped e
       @callback.calledWith(e).should.be.true
     
     it 'should accept Error', ->
-      wrapped = varity 'Error', @callback
+      wrapped = $ 'Error', @callback
       e = new Error()
       wrapped e
       @callback.calledWith(e).should.be.true
 
     it 'should accept Element', (done) ->
       callback = @callback
-      wrapped = varity 'Element', @callback
+      wrapped = $ 'Element', @callback
       jsdom.env '<div id="id"></div>', (e, window) ->
         el = window.document.getElementById('id')
         wrapped el
@@ -218,7 +218,7 @@ describe 'varity', ->
 
     it 'should accept jQuery', (done) ->
       callback = @callback
-      wrapped = varity 'jQuery', @callback
+      wrapped = $ 'jQuery', @callback
       jsdom.env '<div id="1"></div><div id="2"></div><div id="3"></div>', ["http://code.jquery.com/jquery.js"], (e, window) ->
         elems = window.$('div')
         wrapped elems
@@ -229,71 +229,71 @@ describe 'varity', ->
       obj = {}
       arr = []
       fn = ->
-      wrapped = varity 'string', 'object', 'array', 'function', @callback
+      wrapped = $ 'string', 'object', 'array', 'function', @callback
       wrapped('something', obj, arr, fn)
       @callback.calledWith('something', obj, arr, fn).should.be.true
 
     it 'should accept multiple string parameters with duplicates', ->
       fn1 = ->
       fn2 = ->
-      wrapped = varity 'function', 'function', @callback
+      wrapped = $ 'function', 'function', @callback
       wrapped(fn1, fn2)
       @callback.calledWith(fn1, fn2).should.be.true
 
   context 'called with actual types', ->
     it 'should accept String', ->
-      wrapped = varity String, @callback
+      wrapped = $ String, @callback
       wrapped 'string'
       @callback.calledWith('string').should.be.true
 
     it 'should accept Function', ->
-      wrapped = varity Function, @callback
+      wrapped = $ Function, @callback
       fn = ->
       wrapped fn
       @callback.calledWith(fn).should.be.true
 
     it 'should accept Object', ->
-      wrapped = varity Object, @callback
+      wrapped = $ Object, @callback
       obj = {}
       wrapped obj
       @callback.calledWith(obj).should.be.true
 
     it 'should accept Array', ->
-      wrapped = varity Array, @callback
+      wrapped = $ Array, @callback
       arr = []
       wrapped arr
       @callback.calledWith(arr).should.be.true
 
     it 'should accept Number', ->
-      wrapped = varity Number, @callback
+      wrapped = $ Number, @callback
       wrapped 2
       @callback.calledWith(2).should.be.true
 
     it 'should accept Boolean', ->
-      wrapped = varity Boolean, @callback
+      wrapped = $ Boolean, @callback
       wrapped true
       @callback.calledWith(true).should.be.true
 
     it 'should accept Date', ->
-      wrapped = varity Date, @callback
+      wrapped = $ Date, @callback
       date = new Date()
       wrapped date
       @callback.calledWith(date).should.be.true
 
     it 'should accept RegExp', ->
-      wrapped = varity RegExp, @callback
+      wrapped = $ RegExp, @callback
       reg = /.*/
       wrapped reg
       @callback.calledWith(reg).should.be.true
 
     it 'should accept Error', ->
-      wrapped = varity Error, @callback
+      wrapped = $ Error, @callback
       e = new Error()
       wrapped e
       @callback.calledWith(e).should.be.true
 
     it 'should accept multiple type parameters', ->
-      wrapped = varity String, Function, Object, Array, RegExp, Date, @callback
+      wrapped = $ String, Function, Object, Array, RegExp, Date, @callback
       fn = ->
       obj = {}
       arr = []
@@ -303,7 +303,7 @@ describe 'varity', ->
       @callback.calledWith('string', fn, obj, arr, reg, date).should.be.true
 
     it 'should accept multiple type parameters with duplicates', ->
-      wrapped = varity Function, Array, Function, @callback
+      wrapped = $ Function, Array, Function, @callback
       fn1 = ->
       fn2 = ->
       arr = []
@@ -312,34 +312,34 @@ describe 'varity', ->
 
   context 'called with special types', ->
     it 'should accept null', ->
-      wrapped = varity null, @callback
+      wrapped = $ null, @callback
       wrapped null
       @callback.calledWith(null).should.be.true
 
     it 'should accept undefined', ->
-      wrapped = varity undefined, @callback
+      wrapped = $ undefined, @callback
       wrapped undefined
       @callback.calledWith(undefined).should.be.true
 
     it 'should accept multiple special parameters', ->
-      wrapped = varity null, undefined, @callback
+      wrapped = $ null, undefined, @callback
       wrapped null, undefined
       @callback.calledWith(null, undefined).should.be.true
 
     it 'should accept multiple special parameters with duplicate', ->
-      wrapped = varity null, null, undefined, null, @callback
+      wrapped = $ null, null, undefined, null, @callback
       wrapped null, null, undefined, null
       @callback.calledWith(null, null, undefined, null).should.be.true
 
   context 'called with mixed types', ->
     it 'should accept any combination of types (part 1)', ->
-      wrapped = varity 'string', Function, null, @callback
+      wrapped = $ 'string', Function, null, @callback
       fn = ->
       wrapped 'string', fn, null
       @callback.calledWith('string', fn, null).should.be.true
 
     it 'should accept any combination of types (part 2)', ->
-      wrapped = varity 'string', Function, Function, 'object', Object, null, undefined, Date, 'regexp', @callback
+      wrapped = $ 'string', Function, Function, 'object', Object, null, undefined, Date, 'regexp', @callback
       fn1 = ->
       fn2 = ->
       obj1 = {}
@@ -351,25 +351,25 @@ describe 'varity', ->
 
   context 'called with an array', ->
     it 'should accept an array of string parameters', ->
-      wrapped = varity ['string', 'object'], @callback
+      wrapped = $ ['string', 'object'], @callback
       obj = {}
       wrapped 'string', obj
       @callback.calledWith('string', obj).should.be.true
 
     it 'should accept an array of type parameters', ->
-      wrapped = varity [Date, RegExp], @callback
+      wrapped = $ [Date, RegExp], @callback
       date = new Date()
       reg = /.*/
       wrapped date, reg
       @callback.calledWith(date, reg).should.be.true
 
     it 'should accept an array of special parameters', ->
-      wrapped = varity [null, undefined, null], @callback
+      wrapped = $ [null, undefined, null], @callback
       wrapped null, undefined, null
       @callback.calledWith(null, undefined, null).should.be.true
 
     it 'should accept an array of mixed parameters', ->
-      wrapped = varity [null, 'string', Object, 'date', Function], @callback
+      wrapped = $ [null, 'string', Object, 'date', Function], @callback
       obj = {}
       date = new Date()
       fn = ->
@@ -377,7 +377,7 @@ describe 'varity', ->
       @callback.calledWith(null, 'string', obj, date, fn).should.be.true
 
     it 'should flatten an array of arrays with parameters', ->
-      wrapped = varity [['string', 'function'], ['object']], @callback
+      wrapped = $ [['string', 'function'], ['object']], @callback
       fn = ->
       obj = {}
       wrapped 'string', fn, obj
@@ -385,14 +385,14 @@ describe 'varity', ->
 
   context 'called with regular parameters and an array', ->
     it 'should accept parameters with a single array', ->
-      wrapped = varity 'string', [Object, Function], @callback
+      wrapped = $ 'string', [Object, Function], @callback
       fn = ->
       obj = {}
       wrapped 'string', obj, fn
       @callback.calledWith('string', obj, fn).should.be.true
 
     it 'should accept parameters with more than one array', ->
-      wrapped = varity [Array, Date], 'object', [undefined, 'infinity'], @callback
+      wrapped = $ [Array, Date], 'object', [undefined, 'infinity'], @callback
       arr = []
       date = new Date()
       obj = {}
@@ -402,67 +402,67 @@ describe 'varity', ->
 
   context 'called with string abbreviations', ->
     it 'should accept s', ->
-      wrapped = varity 's', @callback
+      wrapped = $ 's', @callback
       wrapped 'string'
       @callback.calledWith('string').should.be.true
 
     it 'should accept f', ->
-      wrapped = varity 'f', @callback
+      wrapped = $ 'f', @callback
       fn = ->
       wrapped fn
       @callback.calledWith(fn).should.be.true
 
     it 'should accept o', ->
-      wrapped = varity 'o', @callback
+      wrapped = $ 'o', @callback
       obj = {}
       wrapped obj
       @callback.calledWith(obj).should.be.true
 
     it 'should accept A', ->
-      wrapped = varity ' A', @callback
+      wrapped = $ ' A', @callback
       arr = []
       wrapped arr
       @callback.calledWith(arr).should.be.true
 
     it 'should accept 1', ->
-      wrapped = varity '1', @callback
+      wrapped = $ '1', @callback
       wrapped 2
       @callback.calledWith(2).should.be.true
 
     it 'should accept b', ->
-      wrapped = varity 'b', @callback
+      wrapped = $ 'b', @callback
       wrapped true
       @callback.calledWith(true).should.be.true
 
     it 'should accept d', ->
-      wrapped = varity 'd', @callback
+      wrapped = $ 'd', @callback
       date = new Date()
       wrapped date
       @callback.calledWith(date).should.be.true
 
     it 'should accept r', ->
-      wrapped = varity 'r', @callback
+      wrapped = $ 'r', @callback
       reg = /.*/
       wrapped reg
       @callback.calledWith(reg).should.be.true
 
     it 'should accept N', ->
-      wrapped = varity ' N', @callback
+      wrapped = $ ' N', @callback
       wrapped NaN
       @callback.args[0][0].should.be.NaN
 
     it 'should accept n', ->
-      wrapped = varity 'n', @callback
+      wrapped = $ 'n', @callback
       wrapped null
       @callback.calledWith(null).should.be.true
 
     it 'should accept u', ->
-      wrapped = varity 'u', @callback
+      wrapped = $ 'u', @callback
       wrapped undefined
       @callback.calledWith(undefined).should.be.true
 
     it 'should accept a', ->
-      wrapped = varity 'a', @callback
+      wrapped = $ 'a', @callback
       args = (->
         arguments
       ) 'one', 'two'
@@ -470,19 +470,19 @@ describe 'varity', ->
       @callback.calledWith(args).should.be.true
 
     it 'should accept i', ->
-      wrapped = varity 'i', @callback
+      wrapped = $ 'i', @callback
       wrapped Infinity
       @callback.calledWith(Infinity).should.be.true
 
     it 'should accept e', ->
-      wrapped = varity 'e', @callback
+      wrapped = $ 'e', @callback
       e = new Error()
       wrapped e
       @callback.calledWith(e).should.be.true
 
     it 'should accept E', (done) ->
       callback = @callback
-      wrapped = varity ' E', @callback
+      wrapped = $ ' E', @callback
       jsdom.env '<div id="id"></div>', (e, window) ->
         el = window.document.getElementById('id')
         wrapped el
@@ -491,7 +491,7 @@ describe 'varity', ->
       
     it 'should accept $', (done) ->
       callback = @callback
-      wrapped = varity '$', @callback
+      wrapped = $ '$', @callback
       jsdom.env '<div id="1"></div><div id="2"></div><div id="3"></div>', ["http://code.jquery.com/jquery.js"], (e, window) ->
         elems = window.$('div')
         wrapped elems
@@ -499,7 +499,7 @@ describe 'varity', ->
         done()
 
     it 'should accept a mix of letters', ->
-      wrapped = varity 'sfo1ne', @callback
+      wrapped = $ 'sfo1ne', @callback
       fn = ->
       obj = {}
       e = new Error()
@@ -507,7 +507,7 @@ describe 'varity', ->
       @callback.calledWith('string', fn, obj, 2, null, e).should.be.true
 
     it 'should accept a string with a space at the front', ->
-      wrapped = varity ' Ao', @callback
+      wrapped = $ ' Ao', @callback
       arr = []
       obj = {}
       wrapped arr, obj
@@ -516,13 +516,13 @@ describe 'varity', ->
     it 'should not accept other letters', ->
       callback = @callback
       (->
-        varity '9', callback
+        $ '9', callback
       ).should.throw('Unrecognized type: 9')
 
   context 'called with custom types', ->
     it 'should accept those types', ->
       class Foo
-      wrapped = varity 'Foo', @callback
+      wrapped = $ 'Foo', @callback
       f = new Foo()
       wrapped f
       @callback.calledWith(f).should.be.true
@@ -530,7 +530,7 @@ describe 'varity', ->
     it 'should accept multiple custom types', ->
       class Foo
       class Bar
-      wrapped = varity 'Foo', 'Bar', @callback
+      wrapped = $ 'Foo', 'Bar', @callback
       f = new Foo()
       b = new Bar()
       wrapped f, b
@@ -538,14 +538,14 @@ describe 'varity', ->
 
     it 'should accept camel case object names', ->
       class FooBaby
-      wrapped = varity 'FooBaby', @callback
+      wrapped = $ 'FooBaby', @callback
       fb = new FooBaby()
       wrapped fb
       @callback.calledWith(fb).should.be.true
 
     it 'should accept custom types with normal types', ->
       class Foo
-      wrapped = varity 'oAs', 'Foo', @callback
+      wrapped = $ 'oAs', 'Foo', @callback
       obj = {}
       arr = []
       f = new Foo
@@ -554,7 +554,7 @@ describe 'varity', ->
 
   context 'called with an object', ->
     it 'should accept a string type', ->
-      wrapped = varity
+      wrapped = $
         type: 'Array'
       , @callback
       arr = []
@@ -562,7 +562,7 @@ describe 'varity', ->
       @callback.calledWith(arr).should.be.true
 
     it 'should convert Object to AnonObject', ->
-      wrapped = varity
+      wrapped = $
         type: 'Object'
       , @callback
       obj = {}
@@ -570,7 +570,7 @@ describe 'varity', ->
       @callback.calledWith(obj).should.be.true
 
     it 'should convert Regexp to RegExp', ->
-      wrapped = varity
+      wrapped = $
         type: 'Regexp'
       , @callback
       reg = /.*/
@@ -578,14 +578,14 @@ describe 'varity', ->
       @callback.calledWith(reg).should.be.true
 
     it 'should convert Nan to NaN', ->
-      wrapped = varity
+      wrapped = $
         type: 'NaN'
       , @callback
       wrapped NaN
       @callback.args[0][0].should.be.NaN
 
     it 'should accept a real type', ->
-      wrapped = varity
+      wrapped = $
         type: Function
       , @callback
       fn = ->
@@ -593,7 +593,7 @@ describe 'varity', ->
       @callback.calledWith(fn).should.be.true
 
     it 'should accept optional', ->
-      wrapped = varity
+      wrapped = $
         type: 'Object'
         optional: true
       ,
@@ -604,7 +604,7 @@ describe 'varity', ->
       @callback.calledWith(undefined, {}).should.be.true
 
     it 'should accept populate', ->
-      wrapped = varity
+      wrapped = $
         type: 'Object',
         populate: true
       , @callback
@@ -612,7 +612,7 @@ describe 'varity', ->
       @callback.calledWith({}).should.be.true
 
     it 'should accept populate and optional', ->
-      wrapped = varity
+      wrapped = $
         type: 'Object'
         optional: 'true',
         populate: 'true'
@@ -627,7 +627,7 @@ describe 'varity', ->
 
     it 'should accept default on custom string types', ->
       class Foo
-      wrapped = varity
+      wrapped = $
         type: 'Foo'
         default: ->
           return new Foo()
@@ -637,7 +637,7 @@ describe 'varity', ->
 
     it 'should accept default on custom real types', ->
       class Foo
-      wrapped = varity
+      wrapped = $
         type: Foo
         default: ->
           return new Foo()
@@ -646,7 +646,7 @@ describe 'varity', ->
       @callback.args[0][0].should.be.an.instanceOf(Foo)
 
     it 'should accept default on built in types', ->
-      wrapped = varity
+      wrapped = $
         type: 'Object'
         default: ->
           return one: 1
@@ -655,7 +655,7 @@ describe 'varity', ->
       @callback.calledWith(one: 1).should.be.true
 
     it 'should accept non-function defaults', ->
-      wrapped = varity
+      wrapped = $
         type: 'Array'
         default: ['one', 'two']
       , @callback
@@ -663,7 +663,7 @@ describe 'varity', ->
       @callback.calledWith(['one', 'two']).should.be.true
 
     it 'should not override populate if passed together', ->
-      wrapped = varity
+      wrapped = $
         type: 'Array'
         populate: false
         default: ['one', 'two']
@@ -672,7 +672,7 @@ describe 'varity', ->
       @callback.calledWith(undefined).should.be.true
 
     it 'should accept a mix of objects', ->
-      wrapped = varity
+      wrapped = $
         type: 'Array'
       ,
         type: 'Object'
@@ -689,7 +689,7 @@ describe 'varity', ->
       @callback.calledWith(arr, undefined, obj, '').should.be.true
 
     it 'should accept objects with other parameters', ->
-      wrapped = varity 's-o', Object,
+      wrapped = $ 's-o', Object,
         type: 'Array',
         populate: true
         default: -> ['one', 'two']
@@ -700,7 +700,7 @@ describe 'varity', ->
       @callback.calledWith('string1', undefined, obj, ['one', 'two'], '', 'string2').should.be.true
 
     it 'should accept an options object after a string', ->
-      wrapped = varity 's+A',
+      wrapped = $ 's+A',
         defaults:
           'Array': ['one', 'two']
       , @callback
@@ -708,7 +708,7 @@ describe 'varity', ->
       @callback.calledWith('string', ['one', 'two']).should.be.true
 
     it 'should accept options after multiple strings', ->
-      wrapped = varity 'String', '_Array',
+      wrapped = $ 'String', '_Array',
         defaults:
           'Array': ['foobaby']
       , @callback
@@ -717,7 +717,7 @@ describe 'varity', ->
 
     it 'should accept a variety of options', ->
       class Foo
-      wrapped = varity 's~oA',
+      wrapped = $ 's~oA',
         populate: ['object', 'array']
         letters:
           '~': 'Foo'
@@ -731,73 +731,73 @@ describe 'varity', ->
   describe '~wrapper', ->
     context 'called with a missing param', ->
       it 'should pass undefined as the first param', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         obj = {}
         fn = ->
         wrapped obj, fn
         @callback.calledWith(undefined, obj, fn).should.be.true
 
       it 'should pass undefined as a middle param', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         fn = ->
         wrapped 'string', fn
         @callback.calledWith('string', undefined, fn).should.be.true
 
       it 'should pass undefined as the last param', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         obj = {}
         wrapped 'string', obj
         @callback.calledWith('string', obj, undefined).should.be.true
 
     context 'called with multiple missing params', ->
       it 'should accept two missing params next to each other', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         fn = ->
         wrapped fn
         @callback.calledWith(undefined, undefined, fn).should.be.true
 
       it 'should accept two missing params not next to each other', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         obj = {}
         wrapped obj
         @callback.calledWith(undefined, obj, undefined).should.be.true
 
       it 'should accept two missing params at the end', ->
-        wrapped = varity 'sof', @callback
+        wrapped = $ 'sof', @callback
         wrapped 'string'
         @callback.calledWith('string', undefined, undefined).should.be.true
 
     context 'called with multiple params of the same type in a row', ->
       it 'should pass the first instance of that type', ->
-        wrapped = varity 'off', @callback
+        wrapped = $ 'off', @callback
         obj = {}
         fn = ->
         wrapped obj, fn
         @callback.calledWith(obj, fn, undefined).should.be.true
 
       it 'should allow overriding the default behavior with - on types', ->
-        wrapped = varity 'Object', '-Function', 'Function', @callback
+        wrapped = $ 'Object', '-Function', 'Function', @callback
         obj = {}
         fn = ->
         wrapped obj, fn
         @callback.calledWith(obj, undefined, fn).should.be.true
 
       it 'should allow overriding the default behavior with - on abbreviations', ->
-        wrapped = varity 'o-ff', @callback
+        wrapped = $ 'o-ff', @callback
         obj = {}
         fn = ->
         wrapped obj, fn
         @callback.calledWith(obj, undefined, fn).should.be.true
 
       it 'should allow multiple -\'s not next to each other', ->
-        wrapped = varity ' -oo-ff', @callback
+        wrapped = $ ' -oo-ff', @callback
         obj = {}
         fn = ->
         wrapped obj, fn
         @callback.calledWith(undefined, obj, undefined, fn).should.be.true
 
       it 'should allow multiple -\'s next to each other', ->
-        wrapped = varity 'f-A-AA', @callback
+        wrapped = $ 'f-A-AA', @callback
         fn = ->
         arr = []
         wrapped fn, arr
@@ -807,8 +807,8 @@ describe 'varity', ->
       it 'should allow multiple functions to be wrapped', ->
         @callback1 = sinon.spy()
         @callback2 = sinon.spy()
-        wrapped1 = varity 'soA', @callback1
-        wrapped2 = varity 'fed', @callback2
+        wrapped1 = $ 'soA', @callback1
+        wrapped2 = $ 'fed', @callback2
         obj = {}
         arr = []
         fn = ->
@@ -820,7 +820,7 @@ describe 'varity', ->
         @callback2.calledWith(fn, e, date).should.be.true
 
       it 'should allow the same wrapper to be called more than once', ->
-        wrapped = varity 'so', @callback
+        wrapped = $ 'so', @callback
         wrapped 'string'
         obj = {}
         wrapped obj
@@ -830,10 +830,10 @@ describe 'varity', ->
         @callback.getCall(1).args[1].should.equal(obj)
 
       it 'should keep the same options when configure is used', ->
-        varity.configure populate: ['Object']
+        $.configure populate: ['Object']
         @callback2 = sinon.spy()
-        wrapped1 = varity 'o', @callback
-        wrapped2 = varity 'so', @callback2
+        wrapped1 = $ 'o', @callback
+        wrapped2 = $ 'so', @callback2
         wrapped1()
         wrapped2 'string'
         @callback.calledWith({}).should.be.true
@@ -841,80 +841,80 @@ describe 'varity', ->
 
     context 'called with object expansion', ->
       it 'should convert s to \'\'', ->
-        wrapped = varity 's+s', @callback
+        wrapped = $ 's+s', @callback
         wrapped 'string'
         @callback.calledWith('string', '').should.be.true
 
       it 'should convert String to \'\'', ->
-        wrapped = varity 'String', '+String', @callback
+        wrapped = $ 'String', '+String', @callback
         wrapped 'string'
         @callback.calledWith('string', '').should.be.true
 
       it 'should convert Function to ->', ->
-        wrapped = varity 'String', '+Function', @callback
+        wrapped = $ 'String', '+Function', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].toString().should.equal('function (){}')
 
       it 'should convert f to ->', ->
-        wrapped = varity 's+f', @callback
+        wrapped = $ 's+f', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].toString().should.equal('function (){}')
 
       it 'should convert o to {}', ->
-        wrapped = varity 's+of', @callback
+        wrapped = $ 's+of', @callback
         fn = ->
         wrapped 'string', fn
         @callback.calledWith('string', {}, fn).should.be.true
 
       it 'should convert Object to {}', ->
-        wrapped = varity 'String', '+Object', @callback
+        wrapped = $ 'String', '+Object', @callback
         wrapped 'string'
         @callback.calledWith('string', {}).should.be.true
         
       it 'should convert A to []', ->
-        wrapped = varity 's+A', @callback
+        wrapped = $ 's+A', @callback
         wrapped 'string'
         @callback.calledWith('string', []).should.be.true
 
       it 'should convert Array to []', ->
-        wrapped = varity 'String', '+Array', @callback
+        wrapped = $ 'String', '+Array', @callback
         wrapped 'string'
         @callback.calledWith('string', []).should.be.true
 
       it 'should convert Number to 0', ->
-        wrapped = varity 'String', '+Number', @callback
+        wrapped = $ 'String', '+Number', @callback
         wrapped 'string'
         @callback.calledWith('string', 0).should.be.true
 
       it 'should convert 1 to 0', ->
-        wrapped = varity 's+1', @callback
+        wrapped = $ 's+1', @callback
         wrapped 'string'
         @callback.calledWith('string', 0).should.be.true
 
       it 'should convert Boolean to false', ->
-        wrapped = varity 'String', '+Boolean', @callback
+        wrapped = $ 'String', '+Boolean', @callback
         wrapped 'string'
         @callback.calledWith('string', false).should.be.true
 
       it 'should convert b to false', ->
-        wrapped = varity 's+b', @callback
+        wrapped = $ 's+b', @callback
         wrapped 'string'
         @callback.calledWith('string', false).should.be.true
 
       it 'should convert RegExp to /.*/', ->
-        wrapped = varity 'String', '+RegExp', @callback
+        wrapped = $ 'String', '+RegExp', @callback
         wrapped 'string'
         @callback.calledWith('string', /.*/).should.be.true
 
       it 'should convert r to []', ->
-        wrapped = varity 's+r', @callback
+        wrapped = $ 's+r', @callback
         wrapped 'string'
         @callback.calledWith('string', /.*/).should.be.true
 
       it 'should convert Date to today\'s date', ->
-        wrapped = varity 'String', '+Date', @callback
+        wrapped = $ 'String', '+Date', @callback
         d = new Date()
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
@@ -924,7 +924,7 @@ describe 'varity', ->
         arg.getFullYear().should.equal(d.getFullYear())
 
       it 'should convert d to today\'s date', ->
-        wrapped = varity 's+d', @callback
+        wrapped = $ 's+d', @callback
         d = new Date()
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
@@ -934,39 +934,39 @@ describe 'varity', ->
         arg.getFullYear().should.equal(d.getFullYear())
 
       it 'should convert NaN to NaN', ->
-        wrapped = varity 'String', '+NaN', @callback
+        wrapped = $ 'String', '+NaN', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].should.be.NaN
 
       it 'should convert N to NaN', ->
-        wrapped = varity 's+N', @callback
+        wrapped = $ 's+N', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].should.be.NaN
 
       it 'should convert Null to null', ->
-        wrapped = varity 'String', '+Null', @callback
+        wrapped = $ 'String', '+Null', @callback
         wrapped 'string'
         @callback.calledWith('string', null).should.be.true
 
       it 'should convert n to null', ->
-        wrapped = varity 's+n', @callback
+        wrapped = $ 's+n', @callback
         wrapped 'string'
         @callback.calledWith('string', null).should.be.true
         
       it 'should convert Undefined to undefined', ->
-        wrapped = varity 'String', '+Undefined', @callback
+        wrapped = $ 'String', '+Undefined', @callback
         wrapped 'string'
         @callback.calledWith('string', undefined).should.be.true
 
       it 'should convert u to undefined', ->
-        wrapped = varity 's+u', @callback
+        wrapped = $ 's+u', @callback
         wrapped 'string'
         @callback.calledWith('string', undefined).should.be.true
 
       it 'should convert Arguments to arguments', ->
-        wrapped = varity 'String', '+Arguments', @callback
+        wrapped = $ 'String', '+Arguments', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].should.have.property('length')
@@ -974,7 +974,7 @@ describe 'varity', ->
         should.equal(@callback.args[0][1][0], undefined)
 
       it 'should convert a to arguments', ->
-        wrapped = varity 's+a', @callback
+        wrapped = $ 's+a', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].should.have.property('length')
@@ -982,24 +982,24 @@ describe 'varity', ->
         should.equal(@callback.args[0][1][0], undefined)
 
       it 'should convert Infinity to Infinity', ->
-        wrapped = varity 'String', '+Infinity', @callback
+        wrapped = $ 'String', '+Infinity', @callback
         wrapped 'string'
         @callback.calledWith('string', Infinity).should.be.true
 
       it 'should convert i to Infinity', ->
-        wrapped = varity 's+i', @callback
+        wrapped = $ 's+i', @callback
         wrapped 'string'
         @callback.calledWith('string', Infinity).should.be.true
 
       it 'should convert Error to a new error', ->
-        wrapped = varity 'String', '+Error', @callback
+        wrapped = $ 'String', '+Error', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].constructor.name.should.equal('Error')
         @callback.args[0][1].message.should.equal('')
 
       it 'should convert e to a new error', ->
-        wrapped = varity 's+e', @callback
+        wrapped = $ 's+e', @callback
         wrapped 'string'
         @callback.args[0][0].should.equal('string')
         @callback.args[0][1].constructor.name.should.equal('Error')
@@ -1007,29 +1007,29 @@ describe 'varity', ->
 
       # TODO: How to spy on window.document?
       it 'should convert E to document', ->
-        wrapped = varity 's+E', @callback
+        wrapped = $ 's+E', @callback
         wrapped 'string'
         @callback.calledWith('string', '<div></div>').should.be.true
 
       it 'should convert $ to $(document)', ->
-        wrapped = varity 's+$', @callback
+        wrapped = $ 's+$', @callback
         wrapped 'string'
         @callback.calledWith('string', []).should.be.true
 
       it 'should work with - on different abbreviations', ->
-        wrapped = varity 's-oo+A', @callback
+        wrapped = $ 's-oo+A', @callback
         obj = {}
         wrapped 'string', obj
         @callback.calledWith('string', undefined, obj, []).should.be.true
 
       it 'should work with - on different types', ->
-        wrapped = varity 'String', '-Object', 'Object', '+Array', @callback
+        wrapped = $ 'String', '-Object', 'Object', '+Array', @callback
         obj = {}
         wrapped 'string', obj
         @callback.calledWith('string', undefined, obj, []).should.be.true
 
       it 'should work with - on the same abbreviation', ->
-        wrapped = varity 's-+oo', @callback
+        wrapped = $ 's-+oo', @callback
         obj =
           one: 1
           two: 2
@@ -1037,7 +1037,7 @@ describe 'varity', ->
         @callback.calledWith('string', {}, obj).should.be.true
 
       it 'should work with - on the same type', ->
-        wrapped = varity 'String', '-+Object', 'Object', @callback
+        wrapped = $ 'String', '-+Object', 'Object', @callback
         obj =
           one: 1
           two: 2
@@ -1045,7 +1045,7 @@ describe 'varity', ->
         @callback.calledWith('string', {}, obj).should.be.true
 
       it 'should work with - the other way around', ->
-        wrapped = varity 'String', '+-Object', 'Object', @callback
+        wrapped = $ 'String', '+-Object', 'Object', @callback
         obj =
           one: 1
           two: 2
@@ -1054,39 +1054,39 @@ describe 'varity', ->
 
     context 'called with non-empty indicator', ->
       it 'should expand an empty object', ->
-        varity.configure
+        $.configure
           defaults:
             'Object':
               'not': 'empty'
-        wrapped = varity 's_o', @callback
+        wrapped = $ 's_o', @callback
         wrapped 'string', {}
         @callback.calledWith('string', not: 'empty').should.be.true
 
       it 'should expand undefined', ->
-        wrapped = varity 's_A', @callback
+        wrapped = $ 's_A', @callback
         wrapped 'string'
         @callback.calledWith('string', []).should.be.true
 
     context 'called with required indicator', ->
       it 'should throw an error if the required parameter is undefined', ->
-        wrapped = varity '*String', @callback
+        wrapped = $ '*String', @callback
         (->
           wrapped()
         ).should.throw('A required parameter was missing from the wrapped function')
 
       it 'should handle a required parameter followed by a non-required one', ->
-        wrapped = varity ' *ss', @callback
+        wrapped = $ ' *ss', @callback
         wrapped('string')
         @callback.calledWith('string', undefined).should.be.true
 
       it 'should handle a parameter followed by a required one (different types)', ->
-        wrapped = varity ' *so', @callback
+        wrapped = $ ' *so', @callback
         (->
           wrapped {}
         ).should.throw('A required parameter was missing from the wrapped function')
 
       it 'should handle a parameter followed by a required one (same type)', ->
-        wrapped = varity 's*s', @callback
+        wrapped = $ 's*s', @callback
         (->
           wrapped 'string'
         ).should.throw('A required parameter was missing from the wrapped function')
@@ -1094,14 +1094,14 @@ describe 'varity', ->
   describe '#reset', ->
     it 'should restore the defaults', ->
       callback2 = sinon.spy()
-      varity.configure
+      $.configure
         letters:
           'A': 'Apples'
-      wrapped = varity ' A', @callback
+      wrapped = $ ' A', @callback
       wrapped []
       @callback.calledWith(undefined).should.be.true
-      varity.reset()
-      wrapped2 = varity ' A', callback2
+      $.reset()
+      wrapped2 = $ ' A', callback2
       arr = []
       wrapped2 arr
       callback2.calledWith(arr).should.be.true
@@ -1109,21 +1109,21 @@ describe 'varity', ->
   describe '#configure', ->
     context 'called with letters', ->
       it 'should add new letters', ->
-        varity.configure
+        $.configure
           letters:
             'X': 'XtraLg'
-        wrapped = varity ' Xo', @callback
+        wrapped = $ ' Xo', @callback
         class XtraLg
         x = new XtraLg()
         obj = {}
         wrapped x, obj
 
       it 'should override changed letters', ->
-        varity.configure
+        $.configure
           letters:
             'a': 'Array',
             'A': 'Arguments'
-        wrapped = varity 'a', @callback
+        wrapped = $ 'a', @callback
         arr = []
         wrapped arr
         @callback.calledWith(arr).should.be.true
@@ -1131,34 +1131,34 @@ describe 'varity', ->
     context 'called with defaults', ->
       it 'should allow new items', ->
         class Foo
-        varity.configure
+        $.configure
           defaults:
            'Foo': ->
               return new Foo()
-        wrapped = varity '+Foo', @callback
+        wrapped = $ '+Foo', @callback
         wrapped()
         @callback.args[0][0].should.be.an.instanceOf(Foo)
 
       it 'should allow overrides', ->
-        varity.configure
+        $.configure
           defaults:
             'Array': ['one', 'two']
-        wrapped = varity '+Array', @callback
+        wrapped = $ '+Array', @callback
         wrapped()
         @callback.calledWith(['one', 'two']).should.be.true
 
     context 'called with populate', ->
       it 'should expand any missing params', ->
-        varity.configure
+        $.configure
           populate: true
-        wrapped = varity 'so', @callback
+        wrapped = $ 'so', @callback
         wrapped 'string'
         @callback.calledWith('string', {}).should.be.true
 
       it 'should expand passed in param types', ->
-        varity.configure
+        $.configure
           populate: ['Array', 'Object']
-        wrapped = varity 'oAs', @callback
+        wrapped = $ 'oAs', @callback
         wrapped()
         @callback.calledWith({}, [], undefined).should.be.true
 
@@ -1167,7 +1167,7 @@ describe 'varity', ->
         class FooBaby
           birth: ->
             return 'FOO BABY!'
-        varity.configure
+        $.configure
           populate: ['Object', 'Date']
           defaults:
             'Date': ->
@@ -1178,7 +1178,7 @@ describe 'varity', ->
               return new FooBaby().birth()
           letters:
             '~': 'FooBaby'
-        wrapped = varity 'Object', 'Date', 'Error', '-+Error', ' +~', @callback
+        wrapped = $ 'Object', 'Date', 'Error', '-+Error', ' +~', @callback
         wrapped()
         args = @callback.args[0]
         args[0].should.eql({})
