@@ -11,7 +11,7 @@
   "bugs": "https://github.com/tandrewnichols/varity/issues",
   "license": "MIT",
   "scripts": {
-    "test": "mocha test --compilers coffee:coffee-script"
+    "test": "mocha test"
   },
   "dependencies": {
     "underscore": "*",
