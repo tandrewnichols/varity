@@ -185,7 +185,7 @@ var wrapped = $('String', '-Object', 'Object', 'Function', function(id, services
 Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means that type-specific methods on that parameter have to be wrapped in an `if`. For example, the following fails if `list` is undefined.
 
 ```javascript
-var wrapped $('Array', function(list) {
+var wrapped = $('Array', function(list) {
   list.push('something else');
 });
 ```
@@ -193,14 +193,24 @@ var wrapped $('Array', function(list) {
 We'd normally do
 
 ```javascript
-var wrapped $('Array', function(list) {
+var wrapped = $('Array', function(list) {
   if (list) {
     list.push('something else');
   }
 });
 ```
 
-to get around that. Instead, you can tell varity to return something that makes sense (given the type) by prefixing it with `+`. The built in defaults are as follows (though you can override them - more on that later).
+to get around that. Instead, you can tell varity to return something that makes sense (given the type) by prefixing it with `+`. For instance, we can just do this:
+
+```javascript
+var wrapped = $('+Array', function(list) {
+  list.push('something');
+}
+```
+
+and it will work because `list` will be `[]` if no array is passed to the function.
+
+The built in defaults are as follows (though you can override them - more on that later).
 
 * String
 
