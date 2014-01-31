@@ -1,3 +1,4 @@
+process.execPath = 'coffee'
 should = require('should')
 global.context = global.describe
 $ = require('../lib/varity')
@@ -5,7 +6,7 @@ sinon = require('sinon')
 _ = require('underscore')
 jsdom = require('jsdom')
 
-describe '$', ->
+describe 'varity', ->
   beforeEach ->
     @callback = sinon.spy()
 
