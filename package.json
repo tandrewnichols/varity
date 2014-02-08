@@ -11,18 +11,21 @@
   "bugs": "https://github.com/tandrewnichols/varity/issues",
   "license": "MIT",
   "scripts": {
-    "test": "mocha test --compilers coffee:coffee-script"
+    "test": "mocha test",
+    "watch": "mocha test -w -R min --suppress-stack"
   },
   "dependencies": {
-    "underscore": "*",
-    "config-extend": "*"
+    "underscore": "1.5.2",
+    "config-extend": "0.0.6"
   },
   "devDependencies": {
     "coffee-script": "1.6.1",
-    "mocha": "*",
-    "should": "*",
-    "sinon": "*",
-    "jsdom": "*"
+    "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
+    "sandboxed-module": "0.3.0",
+    "sinon": "1.7.3",
+    "mocha-given": "0.0.18",
+    "expect.js": "~0.2.0",
+    "cheerio": "0.13.1"
   },
   "keywords": ["arity", "arguments", "parameters"],
   "main": "./lib/varity.js",
