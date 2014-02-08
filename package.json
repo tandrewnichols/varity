@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "underscore": "1.5.2",
-    "config-extend": "0.0.6"
+    "config-extend": "0.0.6",
+    "expect.js": "~0.2.0"
   },
   "devDependencies": {
     "coffee-script": "1.6.1",
@@ -24,10 +25,13 @@
     "sandboxed-module": "0.3.0",
     "sinon": "1.7.3",
     "mocha-given": "0.0.18",
-    "expect.js": "~0.2.0",
     "cheerio": "0.13.1"
   },
-  "keywords": ["arity", "arguments", "parameters"],
+  "keywords": [
+    "arity",
+    "arguments",
+    "parameters"
+  ],
   "main": "./lib/varity.js",
   "engines": {
     "node": ">=0.8.0"
