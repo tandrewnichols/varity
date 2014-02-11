@@ -1,6 +1,6 @@
 _ = require('underscore')
 global.sinon = require('sinon')
-global.expect = require('expect.js')
+global.expect = require('indeed').expect
 sandboxedModule = require('sandboxed-module')
 
 global.sandbox = (path, requires, globals) ->
