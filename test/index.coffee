@@ -13,9 +13,8 @@ describe 'wrapper', ->
   describe '.configure', ->
     When -> @subject.configure
       foo: 'bar'
-    Then -> expect(@Varity.configure.calledWith
+    Then -> expect(@Varity.configure).calledWith
       foo: 'bar'
-    ).assert()
   describe '.reset', ->
     When -> @subject.reset()
-    Then -> expect(@Varity.reset.calledOnce).assert()
+    Then -> expect(@Varity.reset).calledOnce
