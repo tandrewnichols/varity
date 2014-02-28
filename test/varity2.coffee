@@ -78,3 +78,6 @@ describe 'Varity', ->
       Given -> sinon.spy(@varity, 'tokenize')
       When -> @varity.buildExpectations('abc')
       Then -> expect(@varity.tokenize).calledWith('abc')
+
+    context 'other', ->
+      Then -> expect(@varity.buildExpectations).with(foo: 'bar').to.throw('Arguments to varity must be of type function, array, or string')
