@@ -38,33 +38,23 @@ describe 'Varity', ->
       And -> @wrapper()
       Then -> expect(@fn).called
 
-  describe '#handleArray', ->
-    context 'upper case type', ->
-      When -> @varity.handleArray('String')
-      And -> @res = @varity.expectations[0]('thing')
-      Then -> expect(@res).to.equal(true)
-
-    context 'lower case type', ->
-      When -> @varity.handleArray('array')
-      And -> @res = @varity.expectations[0]([1,2])
-      Then -> expect(@res).to.equal(true)
-
-    context 'does not match', ->
-      When -> @varity.handleArray('object')
-      And -> @res = @varity.expectations[0]([1,2])
-      Then -> expect(@res).to.equal(false)
-
   describe '#buildExpecations', ->
+    afterEach ->
+      @varity.buildEvaluator.restore()
+
+    Given -> sinon.stub(@varity, 'buildEvaluator')
+
     context 'function', ->
       When -> @varity.buildExpectations(Array)
-      And -> @res = @varity.expectations[0]([1,2])
-      Then -> expect(@res).to.equal(true)
+      Then -> expect(@varity.buildEvaluator).calledWith
+        type: ['Array']
 
     context 'array', ->
-      Given -> sinon.stub(@varity, 'handleArray')
       When -> @varity.buildExpectations(['String', 'Object'])
-      Then -> expect(@varity.handleArray).calledWith('String')
-      And -> expect(@varity.handleArray).calledWith('Object')
+      Then -> expect(@varity.buildEvaluator).calledWith
+        type: ['String']
+      And -> expect(@varity.buildEvaluator).calledWith
+        type: ['Object']
       
     context 'string', ->
       Given -> sinon.stub(@varity, 'tokenize')
@@ -75,24 +65,48 @@ describe 'Varity', ->
       Then -> expect(@varity.buildExpectations).with(foo: 'bar').to.throw('Arguments to varity must be of type function, array, or string')
 
   describe '#tokenize', ->
+    afterEach ->
+      @varity.parse.restore()
+
+    Given -> sinon.stub(@varity, 'parse')
+
     context 'simple string', ->
-      Given -> @varity.options.expressions = [/^[soa]/]
       When -> @varity.tokenize('sao')
-      Then -> expect(@varity.expectations.length).to.equal(3)
+      Then -> expect(@varity.parse).calledWith 's'
+      And -> expect(@varity.parse).calledWith 'a'
+      And -> expect(@varity.parse).calledWith 'o'
 
-      describe 'wrapped fn 1', ->
-        context 'called with correct type', ->
-          When -> @varity.expectations[0]('foo')
-          Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ 'foo' ]
+    context 'or', ->
+      When -> @varity.tokenize('s|ao')
+      Then -> expect(@varity.parse).calledWith 's|a'
+      And -> expect(@varity.parse).calledWith 'o'
 
-        context 'called with wrong type', ->
-          When -> @varity.expectations[0](3)
-          Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal []
+    context 'array', ->
+      When -> @varity.tokenize('[s]o')
+      Then -> expect(@varity.parse).calledWith '[s]'
+      And -> expect(@varity.parse).calledWith 'o'
 
-      describe 'wrapped fn 2', ->
-        When -> @varity.expectations[1]([1,2])
-        Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ [1,2] ]
+    context 'or inside array', ->
+      When -> @varity.tokenize('[s|n]o')
+      Then -> expect(@varity.parse).calledWith '[s|n]'
+      And -> expect(@varity.parse).calledWith 'o'
 
-      describe 'wrapped fn 3', ->
-        When -> @varity.expectations[2](foo: 'bar')
-        Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ foo: 'bar' ]
+    context 'array or letter', ->
+      When -> @varity.tokenize('[s]|ao')
+      Then -> expect(@varity.parse).calledWith '[s]|a'
+      And -> expect(@varity.parse).calledWith 'o'
+
+    context 'array or array', ->
+      When -> @varity.tokenize('[s]|[n]a')
+      Then -> expect(@varity.parse).calledWith '[s]|[n]'
+      And -> expect(@varity.parse).calledWith 'a'
+
+    context 'letter or array', ->
+      When -> @varity.tokenize('a|[s]n')
+      Then -> expect(@varity.parse).calledWith 'a|[s]'
+      And -> expect(@varity.parse).calledWith 'n'
+
+    context 'no match', ->
+      When -> @varity.tokenize('&')
+      Then -> expect(@varity.parse).getCall(0) == null
+
