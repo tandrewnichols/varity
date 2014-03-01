@@ -1,11 +1,5 @@
-_ = require('underscore')
-_.mixin require('./../lib/mixins')
-
 describe 'Varity', ->
-  Given -> @standardOpts =
-    stuff: 'thingy'
   Given -> @subject = sandbox 'lib/varity2',
-    './opts': @standardOpts
     'underscore': _
 
   Given -> @varity = new @subject.Varity()
@@ -17,10 +11,8 @@ describe 'Varity', ->
   describe '.configure', ->
     Given -> @opts =
       foo: 'bar'
-    Given -> @subject.Varity.configure(@opts)
-    When -> @varity = new @subject.Varity()
-    Then -> expect(@varity.options).to.deep.equal
-      stuff: 'thingy'
+    When -> @subject.Varity.configure(@opts)
+    Then -> expect(@subject.Varity._globalOptions).to.deep.equal
       foo: 'bar'
 
   describe '.reset', ->
@@ -40,8 +32,8 @@ describe 'Varity', ->
 
     context 'returns the function wrapped', ->
       Given -> @fn = sinon.spy()
-      Given -> sinon.spy(@varity, 'buildExpectations')
-      Given -> sinon.spy(@varity, 'buildParams')
+      Given -> sinon.stub(@varity, 'buildExpectations')
+      Given -> sinon.stub(@varity, 'buildParams')
       When -> @wrapper = @varity.wrap(@fn)
       And -> @wrapper()
       Then -> expect(@fn).called
@@ -69,15 +61,38 @@ describe 'Varity', ->
       Then -> expect(@res).to.equal(true)
 
     context 'array', ->
-      Given -> sinon.spy(@varity, 'handleArray')
+      Given -> sinon.stub(@varity, 'handleArray')
       When -> @varity.buildExpectations(['String', 'Object'])
       Then -> expect(@varity.handleArray).calledWith('String')
       And -> expect(@varity.handleArray).calledWith('Object')
       
     context 'string', ->
-      Given -> sinon.spy(@varity, 'tokenize')
+      Given -> sinon.stub(@varity, 'tokenize')
       When -> @varity.buildExpectations('abc')
       Then -> expect(@varity.tokenize).calledWith('abc')
 
     context 'other', ->
       Then -> expect(@varity.buildExpectations).with(foo: 'bar').to.throw('Arguments to varity must be of type function, array, or string')
+
+  describe '#tokenize', ->
+    context 'simple string', ->
+      Given -> @varity.options.expressions = [/^[soa]/]
+      When -> @varity.tokenize('sao')
+      Then -> expect(@varity.expectations.length).to.equal(3)
+
+      describe 'wrapped fn 1', ->
+        context 'called with correct type', ->
+          When -> @varity.expectations[0]('foo')
+          Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ 'foo' ]
+
+        context 'called with wrong type', ->
+          When -> @varity.expectations[0](3)
+          Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal []
+
+      describe 'wrapped fn 2', ->
+        When -> @varity.expectations[1]([1,2])
+        Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ [1,2] ]
+
+      describe 'wrapped fn 3', ->
+        When -> @varity.expectations[2](foo: 'bar')
+        Then -> expect(_.fix(@varity.applyArgs)).to.deep.equal [ foo: 'bar' ]

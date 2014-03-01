@@ -6,6 +6,8 @@ sandboxedModule = require('sandboxed-module')
 global.sandbox = (path, requires, globals) ->
   sandboxedModule.require("./../#{path}", {requires, globals})
 
+global._ = _
+_.mixin require('./../lib/mixins')
 _.mixin
   fix: (obj) ->
     JSON.parse(JSON.stringify(obj))
