@@ -1,5 +1,7 @@
 describe 'mixins', ->
-  Given -> @mixins = sandbox 'lib/mixins'
+  Given -> @stringify = sinon.stub()
+  Given -> @mixins = sandbox 'lib/mixins',
+    './stringify': @stringify
 
   describe '.capitalize', ->
     When -> @res = @mixins.capitalize('thing')
@@ -57,16 +59,18 @@ describe 'mixins', ->
       When -> @res = @mixins.isjQuery(jquery: '1.0')
       Then -> expect(@res).to.equal(true)
 
-  # TODO: Doesn't work since coffeescript classes return closures
-  #describe '.stringify', ->
-    #context 'custom object', ->
-      #When -> @res = @mixins.stringify(@Foo)
-      #Then -> expect(@res).to.equal('Foo')
+  describe '.stringify', ->
+    context 'custom object', ->
+      Given -> @stringify.returns '[object Foo]'
+      When -> @res = @mixins.stringify(@Foo)
+      Then -> expect(@res).to.equal('Foo')
 
-    #context 'build in object', ->
-      #When -> @res = @mixins.stringify(Array)
-      #Then -> expect(@res).to.equal('Array')
+    context 'build in object', ->
+      Given -> @stringify.returns '[object Array]'
+      When -> @res = @mixins.stringify(Array)
+      Then -> expect(@res).to.equal('Array')
 
-    #context 'undefined', ->
-      #When -> @res = @mixins.stringify(undefined)
-      #Then -> expect(@res).to.equal('Undefined')
+    context 'undefined', ->
+      Given -> @stringify.returns '[object Undefined]'
+      When -> @res = @mixins.stringify(undefined)
+      Then -> expect(@res).to.equal('Undefined')

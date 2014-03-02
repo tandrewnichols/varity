@@ -44,7 +44,7 @@ describe 'Varity', ->
 
     Given -> sinon.stub(@varity, 'buildEvaluator')
 
-    # TODO: stringify doesn't work
+    #TODO: stringify breaks this
     #context 'function', ->
       #When -> @varity.buildExpectations(Array)
       #Then -> expect(@varity.buildEvaluator).calledWith
