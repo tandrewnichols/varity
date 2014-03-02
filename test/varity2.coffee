@@ -114,10 +114,10 @@ describe 'Varity', ->
     Given -> sinon.stub(@varity, 'mapSymbols')
     Given -> @varity.expandTypes.withArgs('+a').returns '+Array'
     Given -> @varity.expandTypes.withArgs('-s|a').returns '-String|Array'
-    Given -> @varity.mapSymbols.withArgs(['+Array', '-String|Array']).returns 'some mapped stuff'
+    Given -> @varity.mapSymbols.withArgs(['+Array', '-String|Array']).returns ['some stuff']
     
     When -> @varity.parse(['+a', '-s|a'])
-    Then -> expect(@varity.buildEvaluator).calledWith 'some mapped stuff'
+    Then -> expect(@varity.buildEvaluator).calledWith 'some stuff'
 
   describe '#expandTypes', ->
     When -> @res = @varity.expandTypes '*a|s[1]'
@@ -132,3 +132,37 @@ describe 'Varity', ->
       symbols: ['*', '-']
       types: 'Array|String'
     ]
+
+  describe '#buildEvaluator', ->
+    Given -> @varity.expectations = []
+
+    context 'single type', ->
+      When -> @varity.buildEvaluator
+        symbols: ['+', '-']
+        types: 'String'
+      Then -> expect(@varity.expectations.length).to.equal(1)
+
+      describe '~ evaluator', ->
+        Given -> sinon.stub(@varity.options.symbols, '+').returnsArg(0)
+        Given -> sinon.stub(@varity.options.symbols, '-').returnsArg(0)
+        When -> @varity.expectations[0]('a string', 'next')
+        Then -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['a string']
+        And -> expect(@varity.options.symbols['+']).calledWith 'a string', 'next'
+        And -> expect(@varity.options.symbols['-']).calledWith 'a string', 'next'
+
+    context 'or type', ->
+      When -> @varity.buildEvaluator
+        symbols: ['+']
+        types: 'String|Array'
+
+      context 'with a string', ->
+        
+
+  describe '#isTypeMatch', ->
+    context 'matches', ->
+      When -> @res = @varity.isTypeMatch 'foo', 'String'
+      Then -> expect(@res).to.be.truthy()
+
+    context 'does not match', ->
+      When -> @res = @varity.isTypeMatch 'foo', 'Number'
+      Then -> expect(@res).to.be.falsy()
