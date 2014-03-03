@@ -111,11 +111,11 @@ describe 'Varity', ->
     When -> @varity.parse(['+a', '-s|a'])
     Then -> expect(@varity.buildEvaluator).to.have.been.calledWith
       symbols: ['+']
-      types: 'Array'
+      types: ['Array']
       arrayType: ''
     And -> expect(@varity.buildEvaluator).to.have.been.calledWith
       symbols: ['-']
-      types: 'String|Array'
+      types: ['String', 'Array']
       arrayType: 'type or type'
 
   describe '#expandTypes', ->
@@ -135,16 +135,17 @@ describe 'Varity', ->
     Given -> sinon.stub(@varity.options.symbols, '+')
     Given -> sinon.stub(@varity.options.symbols, '-')
     Given -> sinon.stub(@varity, 'getMatch')
-    When -> @varity.buildEvaluator
+    Given -> @context =
       symbols: ['+', '-']
       types: 'String|Function'
+    When -> @varity.buildEvaluator @context
     Then -> expect(@varity.expectations.length).to.equal 1
 
     describe '~ evaluator', ->
       Given -> @varity.getMatch.returns 'memo'
       Given -> @varity.options.symbols['-'].returns 'aha!'
       When -> @varity.expectations[0]('a string', 'next')
-      Then -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'memo', 'next'
+      Then -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'memo', @context
       And -> expect(@varity.getMatch).to.have.been.calledWith 'a string', 'String|Function'
       And -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['aha!']
 
@@ -159,45 +160,66 @@ describe 'Varity', ->
 
   describe '#parseSpecialSymbols', ->
     context 'array', ->
-      When -> @res = @varity.parseSpecialSymbols '[String]'
-      Then -> expect(@res).to.equal 'array'
+      Given -> @context =
+        types: '[String]'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'array'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String']
 
     context 'type or type', ->
-      When -> @res = @varity.parseSpecialSymbols 'String|Array'
-      Then -> expect(@res).to.equal 'type or type'
+      Given -> @context =
+        types: 'String|Array'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'type or type'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Array']
 
     context 'type or array', ->
-      When -> @res = @varity.parseSpecialSymbols 'Array|[String]'
-      Then -> expect(@res).to.equal 'type or array'
+      Given -> @context =
+        types: 'Array|[String]'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'type or array'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['Array', 'String']
 
     context 'array or array', ->
-      When -> @res = @varity.parseSpecialSymbols '[String]|[Number]'
-      Then -> expect(@res).to.equal 'array or array'
+      Given -> @context =
+        types: '[String]|[Number]'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'array or array'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
 
     context 'array or type', ->
-      When -> @res = @varity.parseSpecialSymbols '[String]|Number'
-      Then -> expect(@res).to.equal 'array or type'
+      Given -> @context =
+        types: '[String]|Number'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'array or type'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
 
     context 'or inside array', ->
-      When -> @res = @varity.parseSpecialSymbols '[String|Number]'
-      Then -> expect(@res).to.equal 'or inside array'
+      Given -> @context =
+        types: '[String|Number]'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal 'or inside array'
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
       
     context 'undefined', ->
-      When -> @res = @varity.parseSpecialSymbols 'String'
-      Then -> expect(@res).to.equal ''
+      Given -> @context =
+        types: 'String'
+      When -> @varity.parseSpecialSymbols @context
+      Then -> expect(@context.arrayType).to.equal ''
+      And -> expect(_.fix(@context.types)).to.deep.equal ['String']
 
   describe 'getMatch', ->
     context 'array or array', ->
       context 'matches first', ->
         When -> @res = @varity.getMatch
-          types: '[String]|[Number]'
+          types: ['String', 'Number']
           arrayType: 'array or array'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.getMatch
-          types: '[String]|[Number]'
+          types: ['String', 'Number']
           arrayType: 'array or array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
@@ -205,21 +227,21 @@ describe 'Varity', ->
     context 'or inside array', ->
       context 'matches first', ->
         When -> @res = @varity.getMatch
-          types: '[String|Number]'
+          types: ['String', 'Number']
           arrayType: 'or inside array'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.getMatch
-          types: '[String|Number]'
+          types: ['String', 'Number']
           arrayType: 'or inside array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'array', ->
       When -> @res = @varity.getMatch
-        types: '[String]'
+        types: ['String']
         arrayType: 'array'
       , 'foo'
       Then -> expect(_.fix(@res)).to.deep.equal ['foo']
@@ -227,14 +249,14 @@ describe 'Varity', ->
     context 'array or type', ->
       context 'matches first', ->
         When -> @res = @varity.getMatch
-          types: '[String]|Number'
+          types: ['String', 'Number']
           arrayType: 'array or type'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.getMatch
-          types: '[String]|Number'
+          types: ['String', 'Number']
           arrayType: 'array or type'
         , 2
         Then -> expect(@res).to.equal 2
@@ -242,14 +264,14 @@ describe 'Varity', ->
     context 'type or array', ->
       context 'matches first', ->
         When -> @res = @varity.getMatch
-          types: 'String|[Number]'
+          types: ['String', 'Number']
           arrayType: 'type or array'
         , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
         When -> @res = @varity.getMatch
-          types: 'String|[Number]'
+          types: ['String', 'Number']
           arrayType: 'type or array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
@@ -257,21 +279,21 @@ describe 'Varity', ->
     context 'type or type', ->
       context 'matches first', ->
         When -> @res = @varity.getMatch
-          types: 'String|Number'
+          types: ['String', 'Number']
           arrayType: 'type or type'
         , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
         When -> @res = @varity.getMatch
-          types: 'String|Number'
+          types: ['String', 'Number']
           arrayType: 'type or type'
         , 2
         Then -> expect(@res).to.equal 2
 
     context 'no arrayType', ->
       When -> @res = @varity.getMatch
-        types: 'String'
+        types: ['String']
         arrayType: ''
       , 'foo'
       Then -> expect(@res).to.equal 'foo'
