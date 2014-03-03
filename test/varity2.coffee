@@ -127,52 +127,26 @@ describe 'Varity', ->
     Then -> expect(_.fix(@res)).to.deep.equal ['*', '-']
 
   describe '#buildEvaluator', ->
-    #Given -> @varity.expectations = []
-    #Given -> sinon.stub(@varity.options.symbols, '+').returnsArg(0)
-    #Given -> sinon.stub(@varity.options.symbols, '-').returnsArg(0)
+    afterEach ->
+      @varity.options.symbols['+'].restore()
+      @varity.options.symbols['-'].restore()
+      @varity.getMatch.restore()
 
-    #context 'single type', ->
-      #When -> @varity.buildEvaluator
-        #symbols: ['+', '-']
-        #types: 'String'
-      #Then -> expect(@varity.expectations.length).to.equal(1)
+    Given -> sinon.stub(@varity.options.symbols, '+')
+    Given -> sinon.stub(@varity.options.symbols, '-')
+    Given -> sinon.stub(@varity, 'getMatch')
+    When -> @varity.buildEvaluator
+      symbols: ['+', '-']
+      types: 'String|Function'
+    Then -> expect(@varity.expectations.length).to.equal 1
 
-      #describe '~ evaluator', ->
-        #When -> @varity.expectations[0]('a string', 'next')
-        #Then -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['a string']
-        #And -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'a string', 'next'
-        #And -> expect(@varity.options.symbols['-']).to.have.been.calledWith 'a string', 'next'
-
-    #context 'or type', ->
-      #When -> @varity.buildEvaluator
-        #symbols: ['+']
-        #types: 'String|Array'
-      #Then -> expect(@varity.expectations.length).to.equal(1)
-
-      #describe '~ evaluator', ->
-        #context 'with a string', ->
-          #When -> @varity.expectations[0]('a string', 'next')
-          #Then -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['a string']
-          #And -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'a string', 'next'
-
-        #context 'with an array', ->
-          #When -> @varity.expectations[0](['an array'], 'next')
-          #Then -> expect(_.fix(@varity.fnArgs)).to.deep.equal [['an array']]
-          #And -> expect(@varity.options.symbols['+']).to.have.been.calledWith ['an array'], 'next'
-
-        #context 'with something else', ->
-          #When -> @varity.expectations[0](foo: 'bar', 'next')
-          #Then -> expect(@varity.fnArgs[0]).to.not.be.defined()
-
-    #context 'array type', ->
-      #When -> @varity.buildEvaluator
-        #symbols: []
-        #types: '[String]'
-      #Then -> expect(@varity.expectations.length).to.equal(1)
-
-      #describe '~ evaluator', ->
-        #When -> @varity.expectations[0]('a string', 'next')
-        #Then -> expect(_.fix(@varity.fnArgs)).to.deep.equal [['a string']]
+    describe '~ evaluator', ->
+      Given -> @varity.getMatch.returns 'memo'
+      Given -> @varity.options.symbols['-'].returns 'aha!'
+      When -> @varity.expectations[0]('a string', 'next')
+      Then -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'memo', 'next'
+      And -> expect(@varity.getMatch).to.have.been.calledWith 'a string', 'String|Function'
+      And -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['aha!']
 
   describe '#thingOrDefault', ->
     context 'matches', ->
