@@ -297,3 +297,28 @@ describe 'Varity', ->
         arrayType: ''
       , 'foo'
       Then -> expect(@res).to.equal 'foo'
+
+  describe '#getOperations', ->
+    context 'with no symbols', ->
+      When -> @res = @varity.getOperations
+        symbols: []
+      Then -> expect(_.fix(@res)).to.deep.equal([])
+
+    context 'with symbols', ->
+      Given -> @varity.options.symbols['+'] = 'plus'
+      Given -> @varity.options.symbols['-'] = 'minus'
+      When -> @res = @varity.getOperations
+        symbols: ['+', '-']
+      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'minus']
+
+    context 'with user operations', ->
+      Given -> @varity.options.operations =
+        before:
+          '+': ['foo bar']
+        after:
+          '-': ['baz']
+      Given -> @varity.options.symbols['+'] = 'plus'
+      Given -> @varity.options.symbols['-'] = 'minus'
+      When -> @res = @varity.getOperations
+        symbols: ['+', '-']
+      #Then -> expect(_.fix(@res)).to.deep.equal ['foo bar', 'plus', 'minus', 'baz']
