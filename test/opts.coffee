@@ -1,5 +1,7 @@
 describe 'opts', ->
-  Given -> @subject = sandbox 'lib/opts'
+  Given -> @subject = sandbox 'lib/opts',
+    underscore: _
+
   Given -> @symbols = @subject.symbols
   Given -> @this =
     options: @subject
@@ -34,3 +36,29 @@ describe 'opts', ->
       Then -> expect(@symbols['*']).with(undefined,
         types: ['String']
       ).to.throw('A parameter of type String is required.')
+
+  describe '-', ->
+    context 'both are the right type', ->
+      Given -> @this.thingOrDefault = sinon.stub()
+      Given -> @this.thingOrDefault.returns('next')
+      When -> @res = @symbols['-'].call @this, 'string',
+        nextArg: 'next'
+      Then -> expect(@res).to.equal 'string'
+
+    context 'arg is the wrong type', ->
+      When -> @res = @symbols['-'].call @this, undefined, {}
+      Then -> expect(@res).to.not.be.defined()
+      
+    context 'only first is the right type', ->
+      Given -> @this.thingOrDefault = sinon.stub()
+      Given -> @this.thingOrDefault.returns(undefined)
+      When -> @res = @symbols['-'].call @this, 'string',
+        nextArg: {}
+      Then -> expect(@res).to.not.be.defined()
+
+    context 'nextArg does not exist', ->
+      Given -> @this.thingOrDefault = sinon.stub()
+      Given -> @this.thingOrDefault.returns(undefined)
+      When -> @res = @symbols['-'].call @this, 'string',
+        nextArg: undefined
+      Then -> expect(@res).to.not.be.defined()

@@ -11,11 +11,16 @@ describe 'Varity', ->
       foo: 'bar'
     When -> @varity = new @subject.Varity()
     Then -> expect(_.fix(@varity.expectations)).to.deep.equal []
-    And -> expect(_.fix(@varity.fnArgs)).to.deep.equal []
     And -> expect(@varity.letters).to.deep.equal _(@standardOpts.letters).keys().join('')
     And -> expect(@varity.symbols).to.deep.equal _(@standardOpts.symbols).keys().join('')
     And -> expect(@varity.options.foo).to.equal 'bar'
     And -> expect(@varity.buildExpressions).to.have.been.called
+
+  #describe '.extend', ->
+    #When -> @subject.Varity.extend('letters.Q', 'Quux')
+    #Then -> expect(@subject.Varity._instanceOptions).to.deep.equal
+      #letters:
+        #Q: 'Quxx'
 
   describe '.configure', ->
     Given -> @opts =
@@ -140,10 +145,12 @@ describe 'Varity', ->
       @varity.options.symbols['+'].restore()
       @varity.options.symbols['-'].restore()
       @varity.getMatch.restore()
+      @varity.thingOrDefault.restore()
 
     Given -> sinon.stub(@varity.options.symbols, '+')
     Given -> sinon.stub(@varity.options.symbols, '-')
     Given -> sinon.stub(@varity, 'getMatch')
+    Given -> sinon.stub(@varity, 'thingOrDefault')
     Given -> @context =
       symbols: ['+', '-']
       types: 'String|Function'
@@ -151,12 +158,12 @@ describe 'Varity', ->
     Then -> expect(@varity.expectations.length).to.equal 1
 
     describe '~ evaluator', ->
-      Given -> @varity.getMatch.returns 'memo'
+      Given -> @varity.thingOrDefault.returns 'memo'
       Given -> @varity.options.symbols['-'].returns 'aha!'
-      When -> @varity.expectations[0]('a string', 'next')
+      When -> @res = @varity.expectations[0]('a string', 'next')
       Then -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'memo', @context
-      And -> expect(@varity.getMatch).to.have.been.calledWith 'a string', 'String|Function'
-      And -> expect(_.fix(@varity.fnArgs)).to.deep.equal ['aha!']
+      And -> expect(@varity.thingOrDefault).to.have.been.calledWith 'a string', 'String|Function'
+      And -> expect(@res).to.equal 'aha!'
 
   describe '#thingOrDefault', ->
     context 'matches', ->
