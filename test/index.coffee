@@ -3,6 +3,8 @@ describe 'wrapper', ->
   Given -> @Varity = sinon.spy()
   Given -> @Varity.configure = sinon.spy()
   Given -> @Varity.reset = sinon.spy()
+  Given -> @Varity.after = sinon.spy()
+  Given -> @Varity.before = sinon.spy()
   Given -> @subject = sandbox 'lib',
     './varity2': @Varity
     './mixins': 'some mixins'
@@ -13,8 +15,16 @@ describe 'wrapper', ->
   describe '.configure', ->
     When -> @subject.configure
       foo: 'bar'
-    Then -> expect(@Varity.configure).calledWith
+    Then -> expect(@Varity.configure).to.have.been.calledWith
       foo: 'bar'
   describe '.reset', ->
     When -> @subject.reset()
-    Then -> expect(@Varity.reset).calledOnce
+    Then -> expect(@Varity.reset).to.have.been.calledOnce
+  describe '.before', ->
+    Given -> @operation = ->
+    When -> @subject.before '+', @operation
+    Then -> expect(@Varity.before).to.have.been.calledWith '+', @operation
+  describe '.after', ->
+    Given -> @operation = ->
+    When -> @subject.after '-', @operation
+    Then -> expect(@Varity.after).to.have.been.calledWith '-', @operation
