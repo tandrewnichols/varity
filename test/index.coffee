@@ -20,11 +20,3 @@ describe 'wrapper', ->
   describe '.reset', ->
     When -> @subject.reset()
     Then -> expect(@Varity.reset).to.have.been.calledOnce
-  describe '.before', ->
-    Given -> @operation = ->
-    When -> @subject.before '+', @operation
-    Then -> expect(@Varity.before).to.have.been.calledWith '+', @operation
-  describe '.after', ->
-    Given -> @operation = ->
-    When -> @subject.after '-', @operation
-    Then -> expect(@Varity.after).to.have.been.calledWith '-', @operation

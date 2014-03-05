@@ -7,24 +7,14 @@ describe 'Varity', ->
 
   describe '#new', ->
     Given -> sinon.stub(@subject.Varity.prototype, 'buildExpressions')
-    Given -> @before =
-      '+': [->]
-    Given -> @after =
-      '-': [->]
     Given -> @subject.Varity._globalOptions =
       foo: 'bar'
-    Given -> @subject.Varity._before = @before
-    Given -> @subject.Varity._after = @after
     When -> @varity = new @subject.Varity()
     Then -> expect(_.fix(@varity.expectations)).to.deep.equal []
     And -> expect(_.fix(@varity.fnArgs)).to.deep.equal []
-    And -> expect(@varity.options.operations).to.deep.equal
-      before: @before
-      after: @after
     And -> expect(@varity.letters).to.deep.equal _(@standardOpts.letters).keys().join('')
     And -> expect(@varity.symbols).to.deep.equal _(@standardOpts.symbols).keys().join('')
-    And -> expect(@subject.Varity._before).to.deep.equal {}
-    And -> expect(@subject.Varity._after).to.deep.equal {}
+    And -> expect(@varity.options.foo).to.equal 'bar'
     And -> expect(@varity.buildExpressions).to.have.been.called
 
   describe '.configure', ->
@@ -33,54 +23,6 @@ describe 'Varity', ->
     When -> @subject.Varity.configure(@opts)
     Then -> expect(@subject.Varity._globalOptions).to.deep.equal
       foo: 'bar'
-
-  describe '.before', ->
-    context 'no existing before operations', ->
-      Given -> @operation = ->
-      When -> @subject.Varity.before '+', @operation
-      Then -> expect(@subject.Varity._before['+'][0]).to.equal @operation
-
-    context 'existing before operations of the same type', ->
-      Given -> @operation = ->
-      Given -> @existing = ->
-      Given -> @subject.Varity._before =
-        '+': [@existing]
-      When -> @subject.Varity.before '+', @operation
-      Then -> expect(@subject.Varity._before['+'][0]).to.equal @existing
-      And -> expect(@subject.Varity._before['+'][1]).to.equal @operation
-
-    context 'existing before operations of a different type', ->
-      Given -> @operation = ->
-      Given -> @existing = ->
-      Given -> @subject.Varity._before =
-        '-': [@existing]
-      When -> @subject.Varity.before '+', @operation
-      Then -> expect(@subject.Varity._before['-'][0]).to.equal @existing
-      And -> expect(@subject.Varity._before['+'][0]).to.equal @operation
-
-  describe '.after', ->
-    context 'no existing after operations', ->
-      Given -> @operation = ->
-      When -> @subject.Varity.after '+', @operation
-      Then -> expect(@subject.Varity._after['+'][0]).to.equal @operation
-
-    context 'existing after operations of the same type', ->
-      Given -> @operation = ->
-      Given -> @existing = ->
-      Given -> @subject.Varity._after =
-        '+': [@existing]
-      When -> @subject.Varity.after '+', @operation
-      Then -> expect(@subject.Varity._after['+'][0]).to.equal @existing
-      And -> expect(@subject.Varity._after['+'][1]).to.equal @operation
-
-    context 'existing after operations of a different type', ->
-      Given -> @operation = ->
-      Given -> @existing = ->
-      Given -> @subject.Varity._after =
-        '-': [@existing]
-      When -> @subject.Varity.after '+', @operation
-      Then -> expect(@subject.Varity._after['-'][0]).to.equal @existing
-      And -> expect(@subject.Varity._after['+'][0]).to.equal @operation
 
   describe '.reset', ->
     Given -> @subject.Varity._globalOptions =
@@ -379,13 +321,16 @@ describe 'Varity', ->
       Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'minus']
 
     context 'with user operations', ->
-      Given -> @varity.options.operations =
-        before:
-          '+': ['foo bar']
-        after:
-          '-': ['baz']
+      Given -> @varity.options.symbols['~'] = 'tilde'
       Given -> @varity.options.symbols['+'] = 'plus'
       Given -> @varity.options.symbols['-'] = 'minus'
+      Given -> @varity.options.symbols['#'] = 'hash'
       When -> @res = @varity.getOperations
-        symbols: ['+', '-']
-      Then -> expect(_.fix(@res)).to.deep.equal ['foo bar', 'plus', 'minus', 'baz']
+        symbols: ['~', '+', '-', '#']
+      Then -> expect(_.fix(@res)).to.deep.equal ['tilde', 'plus', 'minus', 'hash']
+
+    context 'with non-existent operation', ->
+      Given -> @varity.options.symbols['+'] = 'plus'
+      When -> @res = @varity.getOperations
+        symbols: ['@', '+']
+      Then -> expect(_.fix(@res)).to.deep.equal ['plus']
