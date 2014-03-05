@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "underscore": "1.5.2",
-    "safe-obj": "0.0.2",
+    "safe-obj": "0.0.4",
     "config-extend": "0.0.6"
   },
   "devDependencies": {
