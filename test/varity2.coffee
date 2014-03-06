@@ -126,11 +126,11 @@ describe 'Varity', ->
     Then -> expect(@varity.buildEvaluator).to.have.been.calledWith
       symbols: ['+']
       types: ['Array']
-      arrayType: ''
+      wrapType: ''
     And -> expect(@varity.buildEvaluator).to.have.been.calledWith
       symbols: ['-']
       types: ['String', 'Array']
-      arrayType: 'type or type'
+      wrapType: 'type or type'
 
   describe '#expandTypes', ->
     When -> @res = @varity.expandTypes '*a|s[1]'
@@ -144,12 +144,10 @@ describe 'Varity', ->
     afterEach ->
       @varity.options.symbols['+'].restore()
       @varity.options.symbols['-'].restore()
-      @varity.getMatch.restore()
       @varity.thingOrDefault.restore()
 
     Given -> sinon.stub(@varity.options.symbols, '+')
     Given -> sinon.stub(@varity.options.symbols, '-')
-    Given -> sinon.stub(@varity, 'getMatch')
     Given -> sinon.stub(@varity, 'thingOrDefault')
     Given -> @context =
       symbols: ['+', '-']
@@ -179,153 +177,154 @@ describe 'Varity', ->
       Given -> @context =
         types: '[String]'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'array'
+      Then -> expect(@context.wrapType).to.equal 'array'
       And -> expect(_.fix(@context.types)).to.deep.equal ['String']
 
     context 'type or type', ->
       Given -> @context =
         types: 'String|Array'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'type or type'
+      Then -> expect(@context.wrapType).to.equal 'type or type'
       And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Array']
 
     context 'type or array', ->
       Given -> @context =
         types: 'Array|[String]'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'type or array'
+      Then -> expect(@context.wrapType).to.equal 'type or array'
       And -> expect(_.fix(@context.types)).to.deep.equal ['Array', 'String']
 
     context 'array or array', ->
       Given -> @context =
         types: '[String]|[Number]'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'array or array'
+      Then -> expect(@context.wrapType).to.equal 'array or array'
       And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
 
     context 'array or type', ->
       Given -> @context =
         types: '[String]|Number'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'array or type'
+      Then -> expect(@context.wrapType).to.equal 'array or type'
       And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
 
     context 'or inside array', ->
       Given -> @context =
         types: '[String|Number]'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal 'or inside array'
+      Then -> expect(@context.wrapType).to.equal 'or inside array'
       And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
       
     context 'undefined', ->
       Given -> @context =
         types: 'String'
       When -> @varity.parseSpecialSymbols @context
-      Then -> expect(@context.arrayType).to.equal ''
+      Then -> expect(@context.wrapType).to.equal ''
       And -> expect(_.fix(@context.types)).to.deep.equal ['String']
 
-  describe 'getMatch', ->
+  describe '#wrapResult', ->
     context 'array or array', ->
       context 'matches first', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'array or array'
+          wrapType: 'array or array'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'array or array'
+          wrapType: 'array or array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'or inside array', ->
       context 'matches first', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'or inside array'
+          wrapType: 'or inside array'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'or inside array'
+          wrapType: 'or inside array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'array', ->
-      When -> @res = @varity.getMatch
+      When -> @res = @varity.wrapResult
         types: ['String']
-        arrayType: 'array'
+        wrapType: 'array'
       , 'foo'
       Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
     context 'array or type', ->
       context 'matches first', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'array or type'
+          wrapType: 'array or type'
         , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'array or type'
+          wrapType: 'array or type'
         , 2
         Then -> expect(@res).to.equal 2
 
     context 'type or array', ->
       context 'matches first', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'type or array'
+          wrapType: 'type or array'
         , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'type or array'
+          wrapType: 'type or array'
         , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'type or type', ->
       context 'matches first', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'type or type'
+          wrapType: 'type or type'
         , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
-        When -> @res = @varity.getMatch
+        When -> @res = @varity.wrapResult
           types: ['String', 'Number']
-          arrayType: 'type or type'
+          wrapType: 'type or type'
         , 2
         Then -> expect(@res).to.equal 2
 
-    context 'no arrayType', ->
-      When -> @res = @varity.getMatch
+    context 'no wrapType', ->
+      When -> @res = @varity.wrapResult
         types: ['String']
-        arrayType: ''
+        wrapType: ''
       , 'foo'
       Then -> expect(@res).to.equal 'foo'
 
   describe '#getOperations', ->
+    Given -> @varity.wrapResult = 'wrap'
     context 'with no symbols', ->
       When -> @res = @varity.getOperations
         symbols: []
-      Then -> expect(_.fix(@res)).to.deep.equal([])
+      Then -> expect(_.fix(@res)).to.deep.equal(['wrap'])
 
     context 'with symbols', ->
       Given -> @varity.options.symbols['+'] = 'plus'
       Given -> @varity.options.symbols['-'] = 'minus'
       When -> @res = @varity.getOperations
         symbols: ['+', '-']
-      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'minus']
+      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'minus', 'wrap']
 
     context 'with user operations', ->
       Given -> @varity.options.symbols['~'] = 'tilde'
@@ -334,10 +333,10 @@ describe 'Varity', ->
       Given -> @varity.options.symbols['#'] = 'hash'
       When -> @res = @varity.getOperations
         symbols: ['~', '+', '-', '#']
-      Then -> expect(_.fix(@res)).to.deep.equal ['tilde', 'plus', 'minus', 'hash']
+      Then -> expect(_.fix(@res)).to.deep.equal ['tilde', 'plus', 'minus', 'hash', 'wrap']
 
     context 'with non-existent operation', ->
       Given -> @varity.options.symbols['+'] = 'plus'
       When -> @res = @varity.getOperations
         symbols: ['@', '+']
-      Then -> expect(_.fix(@res)).to.deep.equal ['plus']
+      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'wrap']
