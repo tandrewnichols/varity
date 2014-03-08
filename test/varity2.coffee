@@ -157,35 +157,44 @@ describe 'Varity', ->
 
   describe '#buildEvaluator', ->
     afterEach ->
-      @varity.options.symbols['+'].restore()
-      @varity.options.symbols['-'].restore()
       @varity.thingOrDefault.restore()
+      @varity.getOperations.restore()
 
-    Given -> sinon.stub(@varity.options.symbols, '+')
-    Given -> sinon.stub(@varity.options.symbols, '-')
     Given -> sinon.stub(@varity, 'thingOrDefault')
+    Given -> sinon.stub(@varity, 'getOperations')
+    Given -> @spy1 = sinon.stub()
+    Given -> @spy2 = sinon.stub()
+    Given -> @spy1.returns 'aha'
+    Given -> @spy2.returns 'aha!'
+    Given -> @varity.getOperations.returns [@spy1, @spy2]
     Given -> @context =
       symbols: ['+', '-']
-      types: 'String|Function'
+      types: ['String', 'Function']
     When -> @varity.buildEvaluator @context
     Then -> expect(@varity.expectations.length).to.equal 1
 
     describe '~ evaluator', ->
       Given -> @varity.thingOrDefault.returns 'memo'
-      Given -> @varity.options.symbols['-'].returns 'aha!'
       When -> @res = @varity.expectations[0]('a string', 'next')
-      Then -> expect(@varity.options.symbols['+']).to.have.been.calledWith 'memo', @context
-      And -> expect(@varity.thingOrDefault).to.have.been.calledWith 'a string', 'String|Function'
+      Then -> expect(@varity.thingOrDefault).to.have.been.calledWith 'a string', ['String', 'Function']
+      And -> expect(@spy1).to.have.been.calledWith 'memo', @context
+      And -> expect(@spy2).to.have.been.calledWith 'aha', @context
       And -> expect(@res).to.equal 'aha!'
 
   describe '#thingOrDefault', ->
     context 'matches', ->
-      When -> @res = @varity.thingOrDefault 'foo', 'String'
+      When -> @res = @varity.thingOrDefault 'foo', ['String']
       Then -> expect(@res).to.equal 'foo'
 
     context 'does not match', ->
-      When -> @res = @varity.thingOrDefault 'foo', 'Number'
+      When -> @res = @varity.thingOrDefault 'foo', ['Number']
       Then -> expect(@res).to.not.be.defined()
+
+    context 'does not match and has default', ->
+      Given -> @varity.options.populate = ['Number']
+      Given -> @varity.options.defaults.Number = 7
+      When -> @res = @varity.thingOrDefault 'foo', ['Number']
+      Then -> expect(@res).to.equal 7
 
   describe '#parseSpecialSymbols', ->
     context 'array', ->
