@@ -11,16 +11,17 @@ describe 'Varity', ->
       foo: 'bar'
     When -> @varity = new @subject.Varity()
     Then -> expect(_.fix(@varity.expectations)).to.deep.equal []
+    And -> expect(@subject.Varity._instanceOptions).to.deep.equal {}
     And -> expect(@varity.letters).to.deep.equal _(@standardOpts.letters).keys().join('')
     And -> expect(@varity.symbols).to.deep.equal _(@standardOpts.symbols).keys().join('')
     And -> expect(@varity.options.foo).to.equal 'bar'
     And -> expect(@varity.buildExpressions).to.have.been.called
 
-  #describe '.extend', ->
-    #When -> @subject.Varity.extend('letters.Q', 'Quux')
-    #Then -> expect(@subject.Varity._instanceOptions).to.deep.equal
-      #letters:
-        #Q: 'Quxx'
+  describe '.extend', ->
+    When -> @subject.Varity.extend('letters.Q', 'Quux')
+    Then -> expect(@subject.Varity._instanceOptions).to.deep.equal
+      letters:
+        Q: 'Quux'
 
   describe '.configure', ->
     Given -> @opts =
@@ -34,6 +35,20 @@ describe 'Varity', ->
       foo: 'bar'
     When -> @subject.Varity.reset()
     Then -> expect(@subject.Varity._globalOptions).to.deep.equal {}
+
+  describe '.buildExpressions', ->
+    Given -> @varity.letters = 'abc'
+    Given -> @varity.symbols = '123'
+    When -> @varity.buildExpressions()
+    Then -> expect(_.fix(@varity.options.expressions)).to.deep.equal [
+      '[123]*[abc]\\|\\[[abc]\\]'
+      '[123]*\\[[abc]\\]\\|\\[[abc]\\]'
+      '[123]*\\[[abc]\\]\\|[abc]'
+      '[123]*\\[[abc]\\|[abc]\\]'
+      '[123]*\\[[abc]\\]'
+      '[123]*[abc]\\|[abc]'
+      '[123]*[abc]'
+    ]
 
   describe '#wrap', ->
     Given -> @fn = sinon.stub().returns('foo')
@@ -340,3 +355,14 @@ describe 'Varity', ->
       When -> @res = @varity.getOperations
         symbols: ['@', '+']
       Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'wrap']
+
+  describe '#buildParams', ->
+    Given -> @exp1 = sinon.stub()
+    Given -> @exp2 = sinon.stub()
+    Given -> @exp1.returns 'result 1'
+    Given -> @exp2.returns 'result 2'
+    Given -> @varity.expectations = [@exp1, @exp2]
+    When -> @res = @varity.buildParams ['arg1', 'arg2']
+    Then -> expect(@exp1).to.have.been.calledWith 'arg1', 'arg2'
+    And -> expect(@exp2).to.have.been.calledWith 'arg2', undefined
+    And -> expect(_.fix(@res)).to.deep.equal ['result 1', 'result 2']

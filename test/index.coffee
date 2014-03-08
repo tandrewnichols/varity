@@ -5,6 +5,7 @@ describe 'wrapper', ->
   Given -> @Varity.reset = sinon.spy()
   Given -> @Varity.after = sinon.spy()
   Given -> @Varity.before = sinon.spy()
+  Given -> @Varity.extend = sinon.spy()
   Given -> @subject = sandbox 'lib',
     './varity2': @Varity
     './mixins': 'some mixins'
@@ -20,3 +21,12 @@ describe 'wrapper', ->
   describe '.reset', ->
     When -> @subject.reset()
     Then -> expect(@Varity.reset).to.have.been.calledOnce
+  describe '.letters', ->
+    When -> @subject.letters 'Q', 'Quux'
+    Then -> expect(@Varity.extend).to.have.been.calledWith 'letters.Q', 'Quux'
+  describe '.symbols', ->
+    When -> @subject.symbols '&', 'ampersand'
+    Then -> expect(@Varity.extend).to.have.been.calledWith 'symbols.&', 'ampersand'
+  describe '.defaults', ->
+    When -> @subject.defaults 'Number', 2
+    Then -> expect(@Varity.extend).to.have.been.calledWith 'defaults.Number', 2
