@@ -7,7 +7,7 @@ describe 'wrapper', ->
   Given -> @Varity.before = sinon.spy()
   Given -> @Varity.extend = sinon.spy()
   Given -> @subject = sandbox 'lib',
-    './varity2': @Varity
+    './varity': @Varity
     './mixins': 'some mixins'
     'underscore': @_
 
