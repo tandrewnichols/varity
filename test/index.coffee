@@ -3,8 +3,6 @@ describe 'wrapper', ->
   Given -> @Varity = sinon.spy()
   Given -> @Varity.configure = sinon.spy()
   Given -> @Varity.reset = sinon.spy()
-  Given -> @Varity.after = sinon.spy()
-  Given -> @Varity.before = sinon.spy()
   Given -> @Varity.extend = sinon.spy()
   Given -> @subject = sandbox 'lib',
     './varity': @Varity
@@ -30,3 +28,12 @@ describe 'wrapper', ->
   describe '.defaults', ->
     When -> @subject.defaults 'Number', 2
     Then -> expect(@Varity.extend).to.have.been.calledWith 'defaults.Number', 2
+  describe '.populate', ->
+    afterEach ->
+      @subject.defaults.restore()
+      
+    Given -> @Varity._instanceOptions = {}
+    Given -> sinon.stub(@subject, 'defaults')
+    When -> @subject.populate 'Number', 2
+    Then -> expect(_.fix(@Varity._instanceOptions.populate)).to.deep.equal ['Number']
+    And -> expect(@subject.defaults).to.have.been.calledWith 'Number', 2
