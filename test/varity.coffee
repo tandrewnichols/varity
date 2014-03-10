@@ -3,38 +3,38 @@ describe 'Varity', ->
     'underscore': _
 
   Given -> @standardOpts = require '../lib/opts'
-  Given -> @varity = new @subject.Varity()
+  Given -> @varity = new @subject()
 
   describe '#new', ->
-    Given -> sinon.stub(@subject.Varity.prototype, 'buildExpressions')
-    Given -> @subject.Varity._globalOptions =
+    Given -> sinon.stub(@subject.prototype, 'buildExpressions')
+    Given -> @subject._globalOptions =
       foo: 'bar'
-    When -> @varity = new @subject.Varity()
+    When -> @varity = new @subject()
     Then -> expect(_.fix(@varity.expectations)).to.deep.equal []
-    And -> expect(@subject.Varity._instanceOptions).to.deep.equal {}
+    And -> expect(@subject._instanceOptions).to.deep.equal {}
     And -> expect(@varity.letters).to.deep.equal _(@standardOpts.letters).keys().join('')
     And -> expect(@varity.symbols).to.deep.equal _(@standardOpts.symbols).keys().join('')
     And -> expect(@varity.options.foo).to.equal 'bar'
     And -> expect(@varity.buildExpressions).to.have.been.called
 
   describe '.extend', ->
-    When -> @subject.Varity.extend('letters.Q', 'Quux')
-    Then -> expect(@subject.Varity._instanceOptions).to.deep.equal
+    When -> @subject.extend('letters.Q', 'Quux')
+    Then -> expect(@subject._instanceOptions).to.deep.equal
       letters:
         Q: 'Quux'
 
   describe '.configure', ->
     Given -> @opts =
       foo: 'bar'
-    When -> @subject.Varity.configure(@opts)
-    Then -> expect(@subject.Varity._globalOptions).to.deep.equal
+    When -> @subject.configure(@opts)
+    Then -> expect(@subject._globalOptions).to.deep.equal
       foo: 'bar'
 
   describe '.reset', ->
-    Given -> @subject.Varity._globalOptions =
+    Given -> @subject._globalOptions =
       foo: 'bar'
-    When -> @subject.Varity.reset()
-    Then -> expect(@subject.Varity._globalOptions).to.deep.equal {}
+    When -> @subject.reset()
+    Then -> expect(@subject._globalOptions).to.deep.equal {}
 
   describe '.buildExpressions', ->
     Given -> @varity.letters = 'abc'
