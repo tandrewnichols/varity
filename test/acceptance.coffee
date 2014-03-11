@@ -1,4 +1,4 @@
-describe.only 'acceptance', ->
+describe 'acceptance', ->
   Given -> @v = require '../lib'
   Given -> @cb = sinon.spy()
 

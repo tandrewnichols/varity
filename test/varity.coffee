@@ -73,18 +73,28 @@ describe 'Varity', ->
 
     Given -> sinon.stub(@varity, 'buildEvaluator')
 
-    #TODO: stringify breaks this
-    #context 'function', ->
-      #When -> @varity.buildExpectations(Array)
-      #Then -> expect(@varity.buildEvaluator).calledWith
-        #type: ['Array']
+    context 'function', ->
+      context 'built in type', ->
+        When -> @varity.buildExpectations(Array)
+        Then -> expect(@varity.buildEvaluator).to.have.been.calledWith
+          symbols: []
+          types: ['Array']
+
+      context 'custom type', ->
+        Given -> @Foo = class Foo
+        When -> @varity.buildExpectations(@Foo)
+        Then -> expect(@varity.buildEvaluator).to.have.been.calledWith
+          symbols: []
+          types: ['Foo']
 
     context 'array', ->
       When -> @varity.buildExpectations(['String', 'Object'])
       Then -> expect(@varity.buildEvaluator).to.have.been.calledWith
-        type: ['String']
+        symbols: []
+        types: ['String']
       And -> expect(@varity.buildEvaluator).to.have.been.calledWith
-        type: ['Object']
+        symbols: []
+        types: ['Object']
       
     context 'string', ->
       Given -> sinon.stub(@varity, 'tokenize')
@@ -249,91 +259,79 @@ describe 'Varity', ->
   describe '#wrapResult', ->
     context 'array or array', ->
       context 'matches first', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'array or array'
-        , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'array or array'
-        , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'or inside array', ->
       context 'matches first', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'or inside array'
-        , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'or inside array'
-        , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'array', ->
-      When -> @res = @varity.wrapResult
+      When -> @res = @varity.wrapResult 'foo',
         types: ['String']
         wrapType: 'array'
-      , 'foo'
       Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
     context 'array or type', ->
       context 'matches first', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'array or type'
-        , 'foo'
         Then -> expect(_.fix(@res)).to.deep.equal ['foo']
 
       context 'matches second', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'array or type'
-        , 2
         Then -> expect(@res).to.equal 2
 
     context 'type or array', ->
       context 'matches first', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'type or array'
-        , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'type or array'
-        , 2
         Then -> expect(_.fix(@res)).to.deep.equal [2]
 
     context 'type or type', ->
       context 'matches first', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'type or type'
-        , 'foo'
         Then -> expect(@res).to.equal 'foo'
 
       context 'matches second', ->
-        When -> @res = @varity.wrapResult
+        When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'type or type'
-        , 2
         Then -> expect(@res).to.equal 2
 
     context 'no wrapType', ->
-      When -> @res = @varity.wrapResult
+      When -> @res = @varity.wrapResult 'foo',
         types: ['String']
         wrapType: ''
-      , 'foo'
       Then -> expect(@res).to.equal 'foo'
 
   describe '#getOperations', ->
