@@ -42,7 +42,7 @@ describe 'opts', ->
       Given -> @this.thingOrDefault = sinon.stub()
       Given -> @this.thingOrDefault.returns('next')
       When -> @res = @symbols['-'].call @this, 'string',
-        nextArg: 'next'
+        args: ['next']
       Then -> expect(@res).to.equal 'string'
 
     context 'arg is the wrong type', ->
@@ -53,12 +53,12 @@ describe 'opts', ->
       Given -> @this.thingOrDefault = sinon.stub()
       Given -> @this.thingOrDefault.returns(undefined)
       When -> @res = @symbols['-'].call @this, 'string',
-        nextArg: {}
+        args: [{}]
       Then -> expect(@res).to.not.be.defined()
 
     context 'nextArg does not exist', ->
       Given -> @this.thingOrDefault = sinon.stub()
       Given -> @this.thingOrDefault.returns(undefined)
       When -> @res = @symbols['-'].call @this, 'string',
-        nextArg: undefined
+        args: undefined
       Then -> expect(@res).to.not.be.defined()

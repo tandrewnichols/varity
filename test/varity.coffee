@@ -185,25 +185,25 @@ describe 'Varity', ->
 
     describe '~ evaluator', ->
       Given -> @varity.thingOrDefault.returns 'memo'
-      When -> @res = @varity.expectations[0]('a string', 'next')
-      Then -> expect(@varity.thingOrDefault).to.have.been.calledWith 'a string', ['String', 'Function']
+      When -> @res = @varity.expectations[0](['a string', 'next'])
+      Then -> expect(@varity.thingOrDefault).to.have.been.calledWith ['a string', 'next'], ['String', 'Function']
       And -> expect(@spy1).to.have.been.calledWith 'memo', @context
       And -> expect(@spy2).to.have.been.calledWith 'aha', @context
       And -> expect(@res).to.equal 'aha!'
 
   describe '#thingOrDefault', ->
     context 'matches', ->
-      When -> @res = @varity.thingOrDefault 'foo', ['String']
+      When -> @res = @varity.thingOrDefault ['foo'], ['String']
       Then -> expect(@res).to.equal 'foo'
 
     context 'does not match', ->
-      When -> @res = @varity.thingOrDefault 'foo', ['Number']
+      When -> @res = @varity.thingOrDefault ['foo'], ['Number']
       Then -> expect(@res).to.not.be.defined()
 
     context 'does not match and has default', ->
       Given -> @varity.options.populate = ['Number']
       Given -> @varity.options.defaults.Number = 7
-      When -> @res = @varity.thingOrDefault 'foo', ['Number']
+      When -> @res = @varity.thingOrDefault ['foo'], ['Number']
       Then -> expect(@res).to.equal 7
 
   describe '#parseSpecialSymbols', ->
@@ -269,6 +269,12 @@ describe 'Varity', ->
           types: ['String', 'Number']
           wrapType: 'array or array'
         Then -> expect(_.fix(@res)).to.deep.equal [2]
+
+      context 'undefined', ->
+        When -> @res = @varity.wrapResult undefined,
+          types: ['String', 'Number']
+          wrapType: 'array or array'
+        Then -> expect(@res).to.equal undefined
 
     context 'or inside array', ->
       context 'matches first', ->
@@ -364,12 +370,11 @@ describe 'Varity', ->
       Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'wrap']
 
   describe '#buildParams', ->
-    Given -> @exp1 = sinon.stub()
-    Given -> @exp2 = sinon.stub()
-    Given -> @exp1.returns 'result 1'
-    Given -> @exp2.returns 'result 2'
+    Given -> @exp1 = (args) ->
+      args.shift()
+      return 'result 1'
+    Given -> @exp2 = (args) ->
+      return 'result 2'
     Given -> @varity.expectations = [@exp1, @exp2]
     When -> @res = @varity.buildParams ['arg1', 'arg2']
-    Then -> expect(@exp1).to.have.been.calledWith 'arg1', 'arg2'
-    And -> expect(@exp2).to.have.been.calledWith 'arg2', undefined
-    And -> expect(_.fix(@res)).to.deep.equal ['result 1', 'result 2']
+    Then -> expect(_.fix(@res)).to.deep.equal ['result 1', 'result 2']
