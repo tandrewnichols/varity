@@ -185,7 +185,8 @@ describe 'Varity', ->
 
     describe '~ evaluator', ->
       Given -> @varity.thingOrDefault.returns 'memo'
-      When -> @res = @varity.expectations[0](['a string', 'next'])
+      Given -> @varity.args = ['a string', 'next']
+      When -> @res = @varity.expectations[0]()
       Then -> expect(@varity.thingOrDefault).to.have.been.calledWith ['a string', 'next'], ['String', 'Function']
       And -> expect(@spy1).to.have.been.calledWith 'memo', @context
       And -> expect(@spy2).to.have.been.calledWith 'aha', @context
@@ -370,11 +371,16 @@ describe 'Varity', ->
       Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'wrap']
 
   describe '#buildParams', ->
-    Given -> @exp1 = (args) ->
-      args.shift()
+    Given -> @exp1 = ->
+      @args.shift()
       return 'result 1'
-    Given -> @exp2 = (args) ->
+    Given -> @exp2 = ->
+      @args.shift()
       return 'result 2'
-    Given -> @varity.expectations = [@exp1, @exp2]
+    Given -> @wrap1 = =>
+      @exp1.call(@varity)
+    Given -> @wrap2 = =>
+      @exp2.call(@varity)
+    Given -> @varity.expectations = [@wrap1, @wrap2]
     When -> @res = @varity.buildParams ['arg1', 'arg2']
     Then -> expect(_.fix(@res)).to.deep.equal ['result 1', 'result 2']

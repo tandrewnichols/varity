@@ -134,3 +134,29 @@ describe 'acceptance', ->
         Given -> @wrapped = @v '+[s]|ab', @cb
         When -> @wrapped true
         Then -> expect(@cb).to.have.been.calledWith [''], true
+
+    context 'with [] | []', ->
+      Given -> @wrapped = @v '[s]|[1]o', @cb
+
+      context 'called with first param', ->
+        When -> @wrapped 'string', {}
+        Then -> expect(@cb).to.have.been.calledWith ['string'], {}
+
+      context 'called with second param', ->
+        When -> @wrapped 2, {}
+        Then -> expect(@cb).to.have.been.calledWith [2], {}
+
+      context 'called with neither', ->
+        When -> @wrapped {}
+        Then -> expect(@cb).to.have.been.calledWith undefined, {}
+
+      context 'called with neither and populate', ->
+        Given -> @wrapped = @v '+[s]|[1]o', @cb
+        When -> @wrapped {}
+        Then -> expect(@cb).to.have.been.calledWith [''], {}
+
+    context 'crazy combination of letters and symbols', ->
+      Given -> @v.populate 'String', 'foo bar'
+      Given -> @wrapped = @v '-+oo[a]+1_s*a|[b]', @cb
+      When -> @wrapped {foo: 'bar'}, [1], '', true, 2
+      Then -> expect(@cb).to.have.been.calledWith {}, {foo: 'bar'}, [[1]], 0, 'foo bar', [true], 2
