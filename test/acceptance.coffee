@@ -27,6 +27,14 @@ describe 'acceptance', ->
       When -> @wrapped @fn
       Then -> expect(@cb).to.have.been.calledWith ['foo', 'bar'], @fn
 
+    # TODO: How to test? Coffeescript wipes out stringify by virtue of closure
+    #context 'with a custom type', ->
+      #Given -> @Foo = class Foo
+      #Given -> @wrapped = @v Array, @Foo, @cb
+      #Given -> @foo = new @Foo()
+      #When -> @wrapped [], @foo
+      #Then -> expect(@cb).to.have.been.calledWith [], @foo
+
   describe 'array syntax', ->
     context 'all types match', ->
       Given -> @fn = sinon.spy()
@@ -160,3 +168,5 @@ describe 'acceptance', ->
       Given -> @wrapped = @v '-+oo[a]+1_s*a|[b]', @cb
       When -> @wrapped {foo: 'bar'}, [1], '', true, 2
       Then -> expect(@cb).to.have.been.calledWith {}, {foo: 'bar'}, [[1]], 0, 'foo bar', [true], 2
+
+    context 'custom', ->
