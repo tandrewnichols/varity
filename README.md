@@ -6,7 +6,7 @@ Javascript arity simplified.
 
 ## Why?
 
-The ability to pass a variable number of parameters to functions is a nice feature of javascript, but it can sometimes lead to boilerplate code at the top of a method to determine which parameters you're actual working with. Something like
+The ability to pass a variable number of parameters to functions is a nice feature of javascript, but it can sometimes lead to boilerplate code at the top of a method to determine which parameters you're actually working with. Something like
 
 ```javascript
 function (url, params, options, callback) {
@@ -23,11 +23,11 @@ Varity ("variable-arity") handles this for you. And it can do some other handy t
 
 ## Install
 
-`npm install varity`
+`npm install varity --save`
 
 ## Basic Use
 
-When you `require('varity')`, you'll get a wrapper function back. Call this function as many times as you need as it instantiates new objects and therefore doesn't lead to object pollution. Basically, you tell this function what you're expecting to receive in your function and pass that function as the last parameter. There are several ways to tell varity what you're expecting.
+When you `require('varity')`, you'll get a wrapper function back. Basically, you tell this function what you're expecting to receive in your function and pass that function as the last parameter. There are several ways to tell varity what you're expecting.
 
 ### With strings
 
