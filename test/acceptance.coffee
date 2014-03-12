@@ -185,4 +185,24 @@ describe 'acceptance', ->
       When -> @wrapped {foo: 'bar'}, [1], '', true, 2
       Then -> expect(@cb).to.have.been.calledWith {}, {foo: 'bar'}, [[1]], 0, 'foo bar', [true], 2
 
-    context 'custom', ->
+    context 'with a custom type', ->
+      Given -> @v.letters 'Q', 'Quux'
+      Given -> @Quux = class Quux
+      Given -> @wrapped = @v 'sQa', @cb
+      Given -> @qx = new @Quux()
+      When -> @wrapped 'string', @qx, [1,2]
+      Then -> expect(@cb).to.have.been.calledWith 'string', @qx, [1,2]
+
+    context 'with a custom symbol', ->
+      Given -> @v.symbols '!', (arg, context) ->
+        return !!arg
+      Given -> @wrapped = @v '!s!a!1', @cb
+      When -> @wrapped '', [], 3
+      Then -> expect(@cb).to.have.been.calledWith false, true, true
+
+    context 'with a custom symbol in conjunction with other symbols', ->
+      Given -> @v.symbols '!', (arg, context) ->
+        return !!arg
+      Given -> @wrapped = @v '!s+!a!1', @cb
+      When -> @wrapped '', 3
+      Then -> expect(@cb).to.have.been.calledWith false, true, true
