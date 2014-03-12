@@ -206,3 +206,24 @@ describe 'acceptance', ->
       Given -> @wrapped = @v '!s+!a!1', @cb
       When -> @wrapped '', 3
       Then -> expect(@cb).to.have.been.calledWith false, true, true
+
+    context 'expecting a return value', ->
+      Given -> @cb = sinon.stub()
+      Given -> @cb.withArgs([1]).returns 'foo'
+      Given -> @wrapped  = @v 'a', @cb
+      When -> @res = @wrapped [1]
+      Then -> expect(@res).to.equal 'foo'
+
+    context 'configure', ->
+      Given -> @v.configure
+        defaults:
+          'Array': ['foo']
+      Given -> @wrapped = @v '+a', @cb
+      When -> @wrapped()
+      Then -> expect(@cb).to.have.been.calledWith ['foo']
+
+      context 'reset', ->
+        Given -> @v.reset()
+        Given -> @wrapped = @v '+a', @cb
+        When -> @wrapped()
+        Then -> expect(@cb).to.have.been.calledWith []
