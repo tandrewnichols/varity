@@ -27,13 +27,22 @@ describe 'acceptance', ->
       When -> @wrapped @fn
       Then -> expect(@cb).to.have.been.calledWith ['foo', 'bar'], @fn
 
-    # TODO: How to test? Coffeescript wipes out stringify by virtue of closure
-    #context 'with a custom type', ->
-      #Given -> @Foo = class Foo
-      #Given -> @wrapped = @v Array, @Foo, @cb
-      #Given -> @foo = new @Foo()
-      #When -> @wrapped [], @foo
-      #Then -> expect(@cb).to.have.been.calledWith [], @foo
+    context 'with a custom type', ->
+      Given -> @Foo = class Foo
+      Given -> @wrapped = @v Array, @Foo, @cb
+      Given -> @foo = new @Foo()
+      When -> @wrapped [], @foo
+      Then -> expect(@cb).to.have.been.calledWith [], @foo
+
+    context 'custom type with a default', ->
+      Given -> @Foo = class Foo
+        constructor: (key, val) ->
+          @[key] = val
+      Given -> @v.populate 'Foo', new @Foo('foo', 'bar')
+      Given -> @wrapped = @v @Foo, @cb
+      When -> @wrapped()
+      And -> @fooArg = @cb.getCall(0).args[0]
+      Then -> expect(@fooArg.foo).to.equal 'bar'
 
   describe 'array syntax', ->
     context 'all types match', ->
@@ -59,6 +68,13 @@ describe 'acceptance', ->
       Given -> @wrapped = @v ['array', 'function'], @cb
       When -> @wrapped @fn
       Then -> expect(@cb).to.have.been.calledWith ['foo', 'bar'], @fn
+
+    context 'with a custom type', ->
+      Given -> @Foo = class Foo
+      Given -> @wrapped = @v ['Array', 'Foo'], @cb
+      Given -> @foo = new @Foo()
+      When -> @wrapped [1], @foo
+      Then -> expect(@cb).to.have.been.calledWith [1], @foo
 
   describe 'letter syntax', ->
     context 'all types match', ->

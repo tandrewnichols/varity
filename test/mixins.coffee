@@ -13,10 +13,10 @@ describe 'mixins', ->
       When -> @res = @mixins.stringify(@Foo)
       Then -> expect(@res).to.equal('Foo')
 
-    context 'build in object', ->
+    context 'built in object', ->
       Given -> @stringify.returns '[object Array]'
       When -> @res = @mixins.stringify(Array)
-      Then -> expect(@res).to.equal('Array')
+      Then -> expect(@res).to.equal('Function')
 
     context 'undefined', ->
       Given -> @stringify.returns '[object Undefined]'
