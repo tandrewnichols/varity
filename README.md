@@ -317,13 +317,35 @@ wrapped('something.com', {}); // Provides 'something.com' and { dataType: 'json'
 
 ### Required: *
 
-Mark a parameter as required. If that parameter is not passed, Varity will throw an exception.
+Marks a parameter as required. If that parameter is not passed, Varity will throw an exception.
 
 ```javascript
 var wrapped = $('*so', function(name, options) {
   // . . .
 });
 wrapped({ async: true }); // throws
+```
+
+### Extend: &
+
+For matching types, the actual argument will be extended with additional defaults. For objects, this means a deep object extend; for arrays, concat; for strings, joining with " "; and for functions, calling `_.compose` (with the default function coming first in the composition). This is an excellent way to handle option extension.
+
+```javascript
+$.extend('Object', { async: true }); // See "Helpers" below
+var wrapped = $('&o', function(options) { });
+wrapped({ path: '/foo/bar' }); // options will equal { async: true, path: '/foo/bar' }
+
+$.extend('Array', [ 'Chuck' ]);
+var wrapped = $('&a', function(ppl) { });
+wrapped([ 'Sue', 'Douglas' ]); // ppl will equal [ 'Sue', 'Douglas', 'Chuck' ]
+
+$.extend('String', 'Please try again.');
+var wrapped = $('&s', function(message) { });
+wrapped('We were unable to update your profile.'); // message will equal 'We were unable to update your profile. Please try again.'
+
+$.extend('Function', function(name) { return 'My name is ' + name; });
+var wrapped = $('&f', function(fn) { });
+wrapped(function(message) { console.log(message); }); // when "fn" is called with "Tim", "My name is Tim" will be logged
 ```
 
 ## Helpers
@@ -404,9 +426,22 @@ $.defaults('Array', [1, 2, 3]);
 
 ```javascript
 $.populate('Array', [1, 2, 3]);
+
+// or
+
+$.populate('Array');
+
+// or
+
+$.populate(true);
 ```
 
-Unlike the others, which simply set the corresponding option, varity.populate both adds the type to the `populate` list _and_ calls $.defaults with both arguments (since, for a one-time option, it's essentially implied that the populating thing should be used).
+Unlike the others, which simply set the corresponding option, varity.populate both adds the type to the `populate` list _and_ calls $.defaults when called with two arguments (since, for a one-time option, it's essentially implied that the populating thing should be used). When called with only a type, that type is added to the `populate` list, but no additional default is set. When called with `true`, all types will be populated by default.
+
+### varity.extend
+
+```javascript
+$.extend('Object', { async: true, path: '/foo/bar' });
 
 ## Custom Symbols
 
