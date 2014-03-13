@@ -207,6 +207,12 @@ describe 'Varity', ->
       When -> @res = @varity.thingOrDefault ['foo'], ['Number']
       Then -> expect(@res).to.equal 7
 
+    context 'does not match and populate is "true"', ->
+      Given -> @varity.options.populate = true
+      Given -> @varity.options.defaults.Number = 3.4
+      When -> @res = @varity.thingOrDefault ['foo'], ['Number']
+      Then -> expect(@res).to.equal 3.4
+
   describe '#parseSpecialSymbols', ->
     context 'array', ->
       Given -> @context =

@@ -27,100 +27,39 @@ Varity ("variable-arity") handles this for you. And it can do some other handy t
 
 ## Basic Use
 
-When you `require('varity')`, you'll get a wrapper function back. Basically, you tell this function what you're expecting to receive in your function and pass that function as the last parameter. There are several ways to tell varity what you're expecting.
+When you `require('varity')`, you'll get a wrapper function back. This wrapper accepts a set of expectations and the function to wrap, then handles boilerplate arity shenanigans for you. If you tell varity you're expecting a string and a number, but only pass it a number, varity will fill in the string argument with `undefined`. No need to test `if (typeof options === 'function')`. There are several ways to tell varity what you're expecting.
 
-### With strings
-
-Pass stringified types as separate parameters:
+### With types
 
 ```javascript
 var $ = require('varity');
-var wrapped = $('String', 'Object', function(url, options) {
-  // . . .
-});
-```
-
-Now, if you call `wrapped` with a string and an object, it will pass them on to your function (nothing fantastic about that part). However, if you call `wrapped` with only a string, varity will pass the string and `undefined` to your function. I know you're thinking "Javascript does that by default. Why should I add this extra layer of abstraction?" Here's where it's useful: if you pass only an object to the wrapped function, varity will pass `undefined` as the first parameter and the object as the second parameter. No need to test `if (typeof url === 'object')`!
-
-Varity recognizes (out of the box) the following types:
-
-* String
-* Function
-* Object
-* Array
-* Number
-* Boolean
-* RegExp
-* Date
-* NaN
-* Null
-* Undefined
-* Arguments
-* Infinity
-* Error
-* Element (a DOM element)
-* jQuery
-
-Additionally, you can pass custom types as strings. Varity will build a simple _ mixin method to test objects you pass it for your object type. For instance:
-
-```javascript
-var wrapped = $('Foo', function(foo) {
-  // Creates an _ mixin method called 'isFoo'
-});
-```
-
-### With actual types
-
-```javascript
 var wrapped = $(Array, Function, function(list, callback) {
-  // . . .
+  // list is guaranteed to be an array or undefined
+  // callback will always be a function or undefined
 });
+
+// For example
+wrapped([1, 2, 3]); // the function will be called with [1, 2, 3] and undefined
+
+// or
+wrapped(function() {}); // undefined, function() {}
+
+// any additional params will also be passed on
+wrapped([1, 2, 3], function() {}, { foo: 'bar' }) // [1, 2, 3], function() {}, { foo: 'bar' }
+
+// in fact, varity is smart enough to handle this:
+wrapped([1, 2, 3], { foo: 'bar' }) // [1, 2, 3], undefined, { foo: 'bar' }
+
+// and even
+wrapped({ foo: 'bar'}) // undefined, undefined, { foo: 'bar'}
 ```
 
-You can pass any of the string types that are recognized javascript types (so not arguments or element). Use `null` for Null and `undefined` for Undefined (though there's not much value in expecting these in functions).
-
-### With string abbreviations
-
-To keep calls to varity short, all built in types have one character analogs that can be passed collectively as a single string:
+You can pass any object type (use `null` for Null and `undefined` for Undefined - though there's not much value in expecting these in functions). You can also pass custom types.
 
 ```javascript
-var wrapped = $('ssf', function(fname, lname, callback) {
-  // . . . 
-});
-```
-
-The following abbreviations are recognized by varity:
-
-* s: String
-* f: Function
-* o: Object
-* A: Array
-* 1: Number
-* b: Boolean
-* r: RegExp
-* d: Date
-* N: NaN
-* n: Null
-* u: Undefined
-* a: Arguments
-* i: Infinity
-* e: Error
-* E: Element
-* $: jQuery
-
-One note about using abbreviations: since javascript objects typically begin with capital letters, Varity checks for initial capital letters when determining if a parameter is a custom type. Some of the type abbreviations are capitals. That means that doing the following won't work:
-
-```javascript
-var wrapped = $('Ao', function(list, obj) {
-  // . . .
-});
-```
-
-Both `A` and `o` are valid type abbreviations, but Varity will think you are trying to pass a custom type called `Ao`. To get around this, prefix initial capital abbreviations with a space.
-
-```javascript
-var wrapped = $(' Ao', function(list, obj) {
-  // Now we'll have an array and an object
+function Foo () {}
+var wrapped = $(Foo, function(foo) {
+  // We have a foo!
 });
 ```
 
@@ -132,83 +71,91 @@ var wrapped = $(['String', 'Function'], function(name, callback) {
 });
 ```
 
-The elements of the array can be strings or types or even other arrays (nested arrays are flattened). You can even mix types:
+This let's you compile argument lists on the fly if necessary.
 
 ```javascript
-var wrapped = $('sf', Array, 'String' ['Function', 'Object'], function(/* . . . */) {
-  // So we're expecting a string, a function, an array, another
-  // string, another function, and an object. Time to refactor...
+var args = ['String'];
+if (opts.async) {
+  args.push('Function');
+}
+
+var wrapped = $.apply($, [args, function(path, cb){
+  // Do neat stuff
+}]);
+```
+
+### With a string
+
+The first two methods are useful, but also lengthy. The real value in varity is in string abbreviations. To keep calls to varity short, all built in types have one character analogs that can be passed collectively as a single string:
+
+```javascript
+var wrapped = $('ssf', function(fname, lname, callback) {
+  // . . . 
 });
 ```
 
-### With objects
+The following abbreviations are currently recognized by varity:
+
+* s: String
+* f: Function
+* o: Object
+* a: Array
+* 1: Number
+* b: Boolean
+* r: RegExp
+* d: Date
+* N: NaN
+* n: Null
+* u: Undefined
+* A: Arguments
+* i: Infinity
+* e: Error
+* E: Element
+* $: jQuery
+
+Additionally, strings can have array wrappers (`[s]`) and ors (`|`). Any letter wrapped in `[]` tells varity to wrap the arg (if it matches that type) in an array. `|` says that either of two types are acceptable. These can also be combined.
+
 ```javascript
-var wrapped = $({ type: 'String' }, { type: 'Array' }, function(name, hobbies) {
-  // . . .
+var wrapped = $('[s]', function(list) {
+  // When called with a string, arguments will be an array with that string as the first and only item
+});
+
+var wrapped = $('1|b', function(isTruthy) {
+  // Either a number or boolean can be passed
+});
+
+var wrapped = $('[s]|a', function(list) {
+  // Either a string (which will be wrapped) or an array can be passed
+});
+
+var wrapped = $('[s]|[1]', function(list) {
+  // Either a string or number can be passed, but in either case, it will be wrapped as an array
 });
 ```
-
-There are some additional parameters that can be passed when using the object format, but to understand those, we need to talk about some of the flags you can pass with parameters.
 
 ## Flags
 
-You can pass the following flags to tell Varity how to deal with the arguments it receives. Note that you have to use string types or string abbreviations for this to work (since, for example, `-String` will be a problem for the javascript compiler).
-
-### Optional: -
-
-Normally, if you pass two of the same type next to each other, Varity will assign the first parameter that matches that type to the first argument and leave the second undefined.
+Knowing that `options` will never be a function is nice, but you might still need to check for definedness before doing something with a parameter:
 
 ```javascript
-var wrapped = $('soof', function(id, services, options, callback) {
-  // . . .
+var wrapped = $('af', function(list, cb) {
+  cb(list.concat(['foo', 'bar']);
 });
+
+wrapped(function(newList) { /* . . . */ }); // Uh, oh. Cannot call method concat of undefined.
 ```
 
-If you call this with a string, an object, and a function, `services` will be the object and `options` will be undefined. If you want to reverse this behavior, prefix the first 'o' with `-` (which tells varity that it is optional).
-
-```javascript
-var wrapped = $('s-oof', function(id, services, options, callback) {
-  // Now if only one object is passed, it'll be set to options.
-});
-```
-
-Or
-
-```javascript
-var wrapped = $('String', '-Object', 'Object', 'Function', function(id, services, options, callback) {
-  // . . .
-});
-```
+Thus, varity has some flags, indicated with symbols, that tell it to handle awkward conditions, such as the above, gracefully.
 
 ### Populate: +
 
-Normally, varity returns `undefined` for missing parameters, but that's not always useful because it means that type-specific methods on that parameter have to be wrapped in an `if`. For example, the following fails if `list` is undefined.
+Tells varity to return a default of the given type so that you don't have to worry about calling type specific methods.
 
 ```javascript
-var wrapped = $('Array', function(list) {
-  list.push('something else');
-});
-```
-
-We'd normally do
-
-```javascript
-var wrapped = $('Array', function(list) {
-  if (list) {
-    list.push('something else');
-  }
-});
-```
-
-to get around that. Instead, you can tell varity to return something that makes sense (given the type) by prefixing it with `+`. For instance, we can just do this:
-
-```javascript
-var wrapped = $('+Array', function(list) {
-  list.push('something');
+var wrapped = $('+a', function(list) {
+  list.push('something'); // list will ALWAYS be an array
 }
 ```
-
-and it will work because `list` will be `[]` if no array is passed to the function.
 
 The built in defaults are as follows (though you can override them - more on that later).
 
@@ -257,9 +204,9 @@ false
 * Date
 
 ```javascript
-function() {
+(function() {
   return new Date();
-}
+})()
 ```
 
 * NaN
@@ -291,66 +238,81 @@ undefined
 * Infinity
 
 ```javascript
-2/0
+2/0 // because I like the number 2
 ```
 
 * Error: 
 
 ```javascript
-function() {
+(function() {
   return new Error();
-}
+})()
 ```
 
 * Element:
 
 ```javascript
-function() {
+(function() {
   if (typeof window !== 'undefined') {
     return window.document;
   } else {
     return '<div></div>';
   }
-}
+})()
 ```
 
 * jQuery:
 
 ```javascript
-function() {
+(function() {
   if (typeof $ !== 'undefined') {
     return $(document);
   } else {
     return [];
   }
-}
+})()
 ```
 
-The Element and jQuery defaults when NOT in the browser aren't perfect, but you probably aren't using either one in node so it doesn't really matter.
+### Optional: -
+
+Normally, if you pass two of the same type next to each other, Varity will assign the first parameter that matches that type to the first argument and leave the second undefined.
+
+```javascript
+var wrapped = $('oo', function(options, data) {
+  // If only one object is passed, it will be passed as "options" and "data" will be undefined
+});
+```
+
+The `optional` flag reverses this behavior. (Alternatively, you could just reverse the parameters: `function(data, options)`.)
+
+```javascript
+var wrapped = $('-oo', function(options, data) {
+  // Now if only one object is passed, it'll be set to "data", leaving "options" undefined.
+});
+```
 
 You can also combine `populate` with `optional`:
 
 ```javascript
-var wrapped = $('s-+oo', function(str, obj1, obj2) {
-  // If passed only 'string' and {one: 1}, arguments will be
-  // 'string', {}, {one: 1}
+var wrapped = $('-+oo', function(obj1, obj2) {
+  // If passed only {foo: 'bar'}, arguments will be {}, {foo: 'bar'}
 });
 ```
 
 ### Non-empty: _
 
-The non-empty flag tells varity to treat "empty" parameters as if they were undefined. This isn't that useful except in conjunction with the populate option below. If you tell varity to populate a type with some other default and use the _ flag, varity will replace an empty type (e.g. `{}`, `[]`, `function() {}`, etc.) with the default of that type.
+The non-empty flag tells varity to treat "empty" parameters as if they were undefined. This isn't that useful unless you change the defaults (more below). If you tell varity to populate a type with some other default and use the _ flag, varity will replace an empty type (e.g. `{}`, `[]`, `function() {}`, etc.) with the default of that type.
 
 ```javascript
-var options = {
+$.populate('Object', {
   dataType: 'json',
   method: 'put'
-};
-
-var wrapped = $('s_o', { defaults: { 'Object': options } }, function(url, opts) {
-  // see below for more about options
 });
-wrapped('something.com', {}); // Varity will use the default options defined above
+
+var wrapped = $('s_o', function(url, opts) {
+  // see below for more about populate
+});
+wrapped('something.com', {}); // Provides 'something.com' and { dataType: 'json', method: 'put' }
 ```
 
 ### Required: *
@@ -358,39 +320,22 @@ wrapped('something.com', {}); // Varity will use the default options defined abo
 Mark a parameter as required. If that parameter is not passed, Varity will throw an exception.
 
 ```javascript
-var wrapped = $(' *so', function(name, options) {
+var wrapped = $('*so', function(name, options) {
   // . . .
 });
 wrapped({ async: true }); // throws
 ```
 
-Note that you if your first argument (using abbreviations) uses a flag,  you need to prefix it with a space (as with initial capital letters).
+## Helpers
 
-### Flags with objects
-
-Passing flags with objects means passing the corresponding keys: "optional," "populate," "required," and "nonEmpty". Additionally, you can pass a "default" to tell varity what to populate empty arguments with.
-
-```javascript
-var wrapped = $(
-  { type: Object, optional: true },
-  { type: Object, populate: true },
-  { type: String, required: true },
-  { type: Array, nonEmpty: true, default: ['one', 'two'] },
-  function(obj1, obj2, str, arr) {
-    // Do stuff
-  }
-);
-```
-
-## Configuration
-
-There are a couple ways to configure varity (besides passing objects, as above):
+Varity also a couple helper methods for changing options.
 
 ### varity.configure
 
 Use `varity.configure` for one time, initial setup. All calls to `varity()` after that will use whatever options you pass. You can pass the following options to `varity.configure`:
 
 * letters - add custom abbreviations or override default ones
+* symbols - additional symbols and their corresponding functions
 * defaults - override built in defaults or provide defaults for custom types
 * populate - turn on `populate` for all types (with `true`) or a set of types (with an array) so that you don't have to use the `+` flag
  
@@ -400,7 +345,12 @@ $.configure({
   letters: {
     '~': 'Foo',
     'a': 'Array',
-    'A': 'Arguments' // If, for example, you don't like that array is capital A by default
+    'g': 'Arguments' // If you don't like dealing with captials 
+  },
+  symbols: {
+    '!': function(arg, context) {
+      return !!arg;
+    }
   },
   defaults: {
     'Object': {
@@ -426,24 +376,48 @@ $.configure({
 });
 ```
 
-Note that these options will be used for EVERY call to varity. If you need to undo these options, you can call `varity.reset()`, which will restore the defaults. However, any already wrapped functions will still have the custom options. If you want to provide options for a SINGLE wrapper, you can either use the object parameter format above or the following method.
+Note that these options will be used for EVERY call to varity. If you need to undo these options, you can call `varity.reset()`, which will restore the defaults. However, any already wrapped functions will still have the custom options.
 
-### As the second to last parameter to varity
+There are also simplified helpers that set one-time options:
 
-The last parameter to varity has to be the actual function to wrap, but if you use strings to define the expected arguments, you can also pass an object of one-time options. The available options are the same as above.
+### varity.letters
 
 ```javascript
-var wrapped = $('soo~', {
-  populate: ['Object'],
-  defaults: {
-    'Object': {
-      name: localStorage.get('name')
-    }
-  },
-  letters:{
-    '~': 'Foo'
-  }
-}, function(str, obj1, obj2, foo) {
-  // . . .
+$.letters('q', Quux);
+```
+
+### varity.symbols
+
+```javascript
+$.symbols('!', function(arg, context) {
+  return !!arg;
 });
 ```
+
+### varity.defaults
+
+```javascript
+$.defaults('Array', [1, 2, 3]);
+```
+
+### varity.populate
+
+```javascript
+$.populate('Array', [1, 2, 3]);
+```
+
+Unlike the others, which simply set the corresponding option, varity.populate both adds the type to the `populate` list _and_ calls $.defaults with both arguments (since, for a one-time option, it's essentially implied that the populating thing should be used).
+
+## Custom Symbols
+
+Each symbol corresponds to a function that receives the current argument and a context. The context looks like this:
+
+```javascript
+{
+  symbols: ['-', '+'], // a list of symbols passed with this argument
+  types: ['String'], // a list of types to match against
+  wrapType: 'array' // indicates whether [] or | were used in the string
+}
+```
+
+In addition, the varity object is passed as the `this` context, so you can access things like `this.args`, which has the full set of arguments passed to varity. You can create custom functionality by adding symbols and manipulating one or both of these parameters. Use this to whatever destructive ends you see fit. Note that symbol operations are called in the order in which they're passed, which _can_ make a difference. For instance, if you want to use `+` and `-` together, you should always pass `-` first, since, after `+` runs, the current argument will _never_ be undefined (well, unless the expected type is `undefined`). The example in the `configure` section above coerces results to booleans. You can take a look at the existing symbol operations to get an idea of how to use the context object.

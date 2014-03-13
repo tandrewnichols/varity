@@ -110,6 +110,19 @@ describe 'acceptance', ->
       When -> @wrapped [], 'string'
       Then -> expect(@cb).to.have.been.calledWith [1,2], 'string'
 
+    context 'with &', ->
+      Given -> @v.extend 'Object', { foo: 'bar' }
+      Given -> @v.extend 'Array', [3, 4]
+      Given -> @v.extend 'String', 'world'
+      Given -> @v.extend 'Function', (name) -> name.split('').reverse().join('')
+      Given -> @wrapped = @v '&o&a&s&f', @cb
+      When -> @wrapped { baz: 'quux' }, [1, 2], 'hello', (rev) -> rev.split('').join(' ')
+      Then -> expect(@cb).to.have.been.calledWith
+        foo: 'bar'
+        baz: 'quux'
+      , [1, 2, 3, 4], 'hello world', sinon.match.func
+      And -> expect(@cb.getCall(0).args[3]('tim')).to.equal 'm i t'
+
     context 'with *', ->
       Given -> @wrapped = @v 'a*o', @cb
       Then -> expect(@wrapped).with([]).to.throw('A parameter of type Object is required.')
