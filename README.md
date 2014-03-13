@@ -405,7 +405,7 @@ There are also simplified helpers that set one-time options:
 ### varity.letters
 
 ```javascript
-$.letters('q', Quux);
+$.letters('q', 'Quux');
 ```
 
 ### varity.symbols
