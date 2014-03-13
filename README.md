@@ -442,6 +442,7 @@ Unlike the others, which simply set the corresponding option, varity.populate bo
 
 ```javascript
 $.extend('Object', { async: true, path: '/foo/bar' });
+```
 
 ## Custom Symbols
 
