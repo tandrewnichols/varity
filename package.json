@@ -33,7 +33,7 @@
     "arguments",
     "parameters"
   ],
-  "main": "./lib/varity.js",
+  "main": "./lib",
   "engines": {
     "node": ">=0.8.0"
   }
