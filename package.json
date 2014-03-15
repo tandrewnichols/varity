@@ -25,7 +25,7 @@
     "sandboxed-module": "0.3.0",
     "sinon": "1.7.3",
     "mocha-given": "0.0.18",
-    "indeed": "1.0.4"
+    "indeed": "1.0.5"
   },
   "keywords": [
     "arity",
