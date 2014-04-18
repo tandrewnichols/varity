@@ -94,6 +94,13 @@ describe 'acceptance', ->
       When -> @wrapped @fn
       Then -> expect(@cb).to.have.been.calledWith undefined, @fn
 
+    # TODO
+    #context 'with a type that doesn\'t belong', ->
+      #Given -> @fn = sinon.spy()
+      #Given -> @wrapped = @v 'af', @cb
+      #Given -> @wrapped 'blah', @fn
+      #Then -> expect(@cb).to.have.been.calledWith @fn, 'blah'
+
     context 'with -', ->
       Given -> @wrapped = @v '-oo', @cb
       When -> @wrapped {}
@@ -191,6 +198,13 @@ describe 'acceptance', ->
         Given -> @wrapped = @v '+[s]|[1]o', @cb
         When -> @wrapped {}
         Then -> expect(@cb).to.have.been.calledWith [''], {}
+
+    context 'with (number)', ->
+      context 'right number of arguments', ->
+        Given -> @wrapped = @v 'f(2)', @cb
+        Given -> @fn = (foo, bar) ->
+        When -> @wrapped @fn
+        Then -> expect(@cb).to.have.been.calledWith @fn
 
     context 'crazy combination of letters and symbols', ->
       Given -> @v.populate 'String', 'foo bar'

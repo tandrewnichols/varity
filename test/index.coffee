@@ -4,7 +4,7 @@ describe 'wrapper', ->
   Given -> @Varity.configure = sinon.spy()
   Given -> @Varity.reset = sinon.spy()
   Given -> @Varity.extend = sinon.spy()
-  Given -> @subject = sandbox 'lib',
+  Given -> @subject = sandbox '../lib',
     './varity': @Varity
     './mixins': 'some mixins'
     'underscore': @_
@@ -41,13 +41,13 @@ describe 'wrapper', ->
     context 'with key/value', ->
       Given -> @Varity._instanceOptions = {}
       When -> @subject.populate 'Number', 2
-      Then -> expect(_.fix(@Varity._instanceOptions.populate)).to.deep.equal ['Number']
+      Then -> expect(@Varity._instanceOptions.populate).to.deep.equal ['Number']
       And -> expect(@subject.defaults).to.have.been.calledWith 'Number', 2
 
     context 'with key only', ->
       Given -> @Varity._instanceOptions = {}
       When -> @subject.populate 'Number'
-      Then -> expect(_.fix(@Varity._instanceOptions.populate)).to.deep.equal ['Number']
+      Then -> expect(@Varity._instanceOptions.populate).to.deep.equal ['Number']
       And -> expect(@subject.defaults.called).not.to.be.true()
 
     context 'with true', ->

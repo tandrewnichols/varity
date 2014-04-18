@@ -1,6 +1,6 @@
 describe 'mixins', ->
   Given -> @stringify = sinon.stub()
-  Given -> @mixins = sandbox 'lib/mixins',
+  Given -> @mixins = sandbox '../lib/mixins',
     './stringify': @stringify
 
   describe '.capitalize', ->

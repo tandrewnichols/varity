@@ -1,5 +1,5 @@
 describe 'operations', ->
-  Given -> @subject = sandbox 'lib/operations',
+  Given -> @subject = sandbox '../lib/operations',
     underscore: _
 
   Given -> @this =
