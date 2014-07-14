@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tandrewnichols/varity.png)](https://travis-ci.org/tandrewnichols/varity)
+[![Build Status](https://travis-ci.org/tandrewnichols/varity.png)](https://travis-ci.org/tandrewnichols/varity) [![downloads](http://img.shields.io/npm/dm/varity.svg)](https://npmjs.org/package/varity) [![npm](http://img.shields.io/npm/v/varity.svg)](https://npmjs.org/package/varity)
 
 # Varity
 
