@@ -7,12 +7,11 @@
     "type": "git",
     "url": "git://github.com/tandrewnichols/varity.git"
   },
-  "homepage": "https://github.com/tandrewnichols/varity",
+  "homepage": "https://www.tandrewnichols.me/modules/varity",
   "bugs": "https://github.com/tandrewnichols/varity/issues",
   "license": "MIT",
   "scripts": {
-    "test": "mocha test",
-    "watch": "mocha test -w -R min --suppress-stack"
+    "test": "grunt"
   },
   "dependencies": {
     "underscore": "1.5.2",
@@ -21,9 +20,16 @@
   },
   "devDependencies": {
     "coffee-script": "1.7.1",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-mocha-cov": "^0.3.0",
+    "grunt-mocha-test": "^0.11.0",
+    "grunt-travis-matrix": "0.0.3",
     "indeed": "1.0.5",
+    "jshint-stylish": "^0.4.0",
     "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
     "mocha-given": "git://github.com/tandrewnichols/mocha-given.git",
+    "mocha-lcov-reporter": "0.0.1",
     "proxyquire": "^1.0.1",
     "sinon": "1.7.3"
   },
@@ -35,5 +41,13 @@
   "main": "./lib",
   "engines": {
     "node": ">=0.8.0"
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "varity/lib"
+      ]
+    }
   }
+
 }
