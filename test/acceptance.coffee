@@ -104,6 +104,13 @@ describe 'acceptance', ->
       When -> @wrapped()
       Then -> expect(@cb).to.have.been.calledWith [], {}
 
+    context 'called more than once with +', ->
+      Given -> @wrapped = @v '+os', (@obj, foo) =>
+        @obj.foo = @obj.foo || foo
+      When -> @wrapped('bar')
+      And -> @wrapped('baz')
+      Then -> expect(@obj.foo).to.equal 'baz'
+
     context 'with _', ->
       Given -> @v.defaults 'Array', [1,2]
       Given -> @wrapped = @v '_as', @cb
