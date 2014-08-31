@@ -1,5 +1,5 @@
 describe 'Varity', ->
-  Given -> @subject = sandbox 'lib/varity',
+  Given -> @subject = sandbox '../lib/varity',
     'underscore': _
 
   Given -> @standardOpts = require '../lib/opts'
@@ -10,7 +10,7 @@ describe 'Varity', ->
     Given -> @subject._globalOptions =
       foo: 'bar'
     When -> @varity = new @subject()
-    Then -> expect(_.fix(@varity.expectations)).to.deep.equal []
+    Then -> expect(@varity.expectations).to.deep.equal []
     And -> expect(@subject._instanceOptions).to.deep.equal {}
     And -> expect(@varity.letters).to.deep.equal _(@standardOpts.letters).keys().join('')
     And -> expect(@varity.symbols).to.deep.equal _(@standardOpts.symbols).keys().join('')
@@ -40,7 +40,7 @@ describe 'Varity', ->
     Given -> @varity.letters = 'abc'
     Given -> @varity.symbols = '123'
     When -> @varity.buildExpressions()
-    Then -> expect(_.fix(@varity.options.expressions)).to.deep.equal [
+    Then -> expect(@varity.options.expressions).to.deep.equal [
       '[123]*[abc]\\|\\[[abc]\\]'
       '[123]*\\[[abc]\\]\\|\\[[abc]\\]'
       '[123]*\\[[abc]\\]\\|[abc]'
@@ -163,7 +163,7 @@ describe 'Varity', ->
 
   describe '#mapSymbols', ->
     When -> @res = @varity.mapSymbols '*-Array|String'
-    Then -> expect(_.fix(@res)).to.deep.equal ['*', '-']
+    Then -> expect(@res).to.deep.equal ['*', '-']
 
   describe '#buildEvaluator', ->
     afterEach ->
@@ -219,49 +219,49 @@ describe 'Varity', ->
         types: '[String]'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'array'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String']
+      And -> expect(@context.types).to.deep.equal ['String']
 
     context 'type or type', ->
       Given -> @context =
         types: 'String|Array'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'type or type'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Array']
+      And -> expect(@context.types).to.deep.equal ['String', 'Array']
 
     context 'type or array', ->
       Given -> @context =
         types: 'Array|[String]'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'type or array'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['Array', 'String']
+      And -> expect(@context.types).to.deep.equal ['Array', 'String']
 
     context 'array or array', ->
       Given -> @context =
         types: '[String]|[Number]'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'array or array'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
+      And -> expect(@context.types).to.deep.equal ['String', 'Number']
 
     context 'array or type', ->
       Given -> @context =
         types: '[String]|Number'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'array or type'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
+      And -> expect(@context.types).to.deep.equal ['String', 'Number']
 
     context 'or inside array', ->
       Given -> @context =
         types: '[String|Number]'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal 'or inside array'
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String', 'Number']
+      And -> expect(@context.types).to.deep.equal ['String', 'Number']
       
     context 'undefined', ->
       Given -> @context =
         types: 'String'
       When -> @varity.parseSpecialSymbols @context
       Then -> expect(@context.wrapType).to.equal ''
-      And -> expect(_.fix(@context.types)).to.deep.equal ['String']
+      And -> expect(@context.types).to.deep.equal ['String']
 
   describe '#wrapResult', ->
     context 'array or array', ->
@@ -269,13 +269,13 @@ describe 'Varity', ->
         When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'array or array'
-        Then -> expect(_.fix(@res)).to.deep.equal ['foo']
+        Then -> expect(@res).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'array or array'
-        Then -> expect(_.fix(@res)).to.deep.equal [2]
+        Then -> expect(@res).to.deep.equal [2]
 
       context 'undefined', ->
         When -> @res = @varity.wrapResult undefined,
@@ -288,26 +288,26 @@ describe 'Varity', ->
         When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'or inside array'
-        Then -> expect(_.fix(@res)).to.deep.equal ['foo']
+        Then -> expect(@res).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'or inside array'
-        Then -> expect(_.fix(@res)).to.deep.equal [2]
+        Then -> expect(@res).to.deep.equal [2]
 
     context 'array', ->
       When -> @res = @varity.wrapResult 'foo',
         types: ['String']
         wrapType: 'array'
-      Then -> expect(_.fix(@res)).to.deep.equal ['foo']
+      Then -> expect(@res).to.deep.equal ['foo']
 
     context 'array or type', ->
       context 'matches first', ->
         When -> @res = @varity.wrapResult 'foo',
           types: ['String', 'Number']
           wrapType: 'array or type'
-        Then -> expect(_.fix(@res)).to.deep.equal ['foo']
+        Then -> expect(@res).to.deep.equal ['foo']
 
       context 'matches second', ->
         When -> @res = @varity.wrapResult 2,
@@ -326,7 +326,7 @@ describe 'Varity', ->
         When -> @res = @varity.wrapResult 2,
           types: ['String', 'Number']
           wrapType: 'type or array'
-        Then -> expect(_.fix(@res)).to.deep.equal [2]
+        Then -> expect(@res).to.deep.equal [2]
 
     context 'type or type', ->
       context 'matches first', ->
@@ -352,14 +352,14 @@ describe 'Varity', ->
     context 'with no symbols', ->
       When -> @res = @varity.getOperations
         symbols: []
-      Then -> expect(_.fix(@res)).to.deep.equal(['wrap'])
+      Then -> expect(@res).to.deep.equal(['wrap'])
 
     context 'with symbols', ->
       Given -> @varity.options.symbols['+'] = 'plus'
       Given -> @varity.options.symbols['-'] = 'minus'
       When -> @res = @varity.getOperations
         symbols: ['+', '-']
-      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'minus', 'wrap']
+      Then -> expect(@res).to.deep.equal ['plus', 'minus', 'wrap']
 
     context 'with user operations', ->
       Given -> @varity.options.symbols['~'] = 'tilde'
@@ -368,13 +368,13 @@ describe 'Varity', ->
       Given -> @varity.options.symbols['#'] = 'hash'
       When -> @res = @varity.getOperations
         symbols: ['~', '+', '-', '#']
-      Then -> expect(_.fix(@res)).to.deep.equal ['tilde', 'plus', 'minus', 'hash', 'wrap']
+      Then -> expect(@res).to.deep.equal ['tilde', 'plus', 'minus', 'hash', 'wrap']
 
     context 'with non-existent operation', ->
       Given -> @varity.options.symbols['+'] = 'plus'
       When -> @res = @varity.getOperations
         symbols: ['@', '+']
-      Then -> expect(_.fix(@res)).to.deep.equal ['plus', 'wrap']
+      Then -> expect(@res).to.deep.equal ['plus', 'wrap']
 
   describe '#buildParams', ->
     Given -> @exp1 = ->
@@ -389,4 +389,4 @@ describe 'Varity', ->
       @exp2.call(@varity)
     Given -> @varity.expectations = [@wrap1, @wrap2]
     When -> @res = @varity.buildParams ['arg1', 'arg2']
-    Then -> expect(_.fix(@res)).to.deep.equal ['result 1', 'result 2']
+    Then -> expect(@res).to.deep.equal ['result 1', 'result 2']

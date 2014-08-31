@@ -21,11 +21,11 @@
   },
   "devDependencies": {
     "coffee-script": "1.7.1",
+    "indeed": "1.0.5",
     "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
-    "sandboxed-module": "0.3.0",
-    "sinon": "1.7.3",
-    "mocha-given": "0.0.18",
-    "indeed": "1.0.5"
+    "mocha-given": "git://github.com/tandrewnichols/mocha-given.git",
+    "proxyquire": "^1.0.1",
+    "sinon": "1.7.3"
   },
   "keywords": [
     "arity",
