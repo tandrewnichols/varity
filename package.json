@@ -1,7 +1,7 @@
 {
   "name": "varity",
   "description": "A simple wrapper to make variable length arities easier to manage",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Andrew Nichols <anichols@manta.com>",
   "repository": {
     "type": "git",
