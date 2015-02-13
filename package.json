@@ -1,7 +1,7 @@
 {
   "name": "varity",
   "description": "A simple wrapper to make variable length arities easier to manage",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Andrew Nichols",
     "email": "tandrewnichols@gmail.com",
