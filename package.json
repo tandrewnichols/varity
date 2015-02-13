@@ -2,12 +2,15 @@
   "name": "varity",
   "description": "A simple wrapper to make variable length arities easier to manage",
   "version": "1.0.3",
-  "author": "Andrew Nichols <anichols@manta.com>",
+  "author": {
+    "name": "Andrew Nichols",
+    "email": "tandrewnichols@gmail.com",
+    "url": "http://www.tandrewnichols.me"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/tandrewnichols/varity.git"
   },
-  "homepage": "https://www.tandrewnichols.me/modules/varity",
   "bugs": "https://github.com/tandrewnichols/varity/issues",
   "license": "MIT",
   "scripts": {
